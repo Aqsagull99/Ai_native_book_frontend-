@@ -1,0 +1,48 @@
+# LLM Planning Workflow Diagram
+
+## Diagram Description
+
+The LLM Planning Workflow shows the process from natural language command to robot action execution:
+
+```
+[Natural Language Command]
+         ↓
+[LLM Prompt Engineering]
+         ↓
+[Context Integration]
+         ↓
+[Plan Generation]
+         ↓
+[Action Sequence Validation]
+         ↓
+[ROS 2 Action Execution]
+         ↓
+[Feedback & Monitoring]
+```
+
+## Detailed Workflow Steps
+
+1. **Natural Language Command**: User provides high-level goal in natural language
+2. **LLM Prompt Engineering**: Structured prompt with context and constraints
+3. **Context Integration**: Environmental state, robot capabilities, constraints
+4. **Plan Generation**: LLM generates step-by-step action sequence
+5. **Action Sequence Validation**: Safety and feasibility checks
+6. **ROS 2 Action Execution**: Execute actions through ROS 2 interface
+7. **Feedback & Monitoring**: Execution status and environment updates
+
+## Alternative Visualization
+
+```
+Input → Processing → Output
+Goal → LLM Planning → Action Sequence → Robot Execution
+```
+
+## Planning Loop
+
+The workflow operates in a loop where feedback influences future planning decisions:
+
+```
+[New Command] ──→ [Plan] ──→ [Execute] ──→ [Monitor]
+    ↑                                         │
+    └────────── [Feedback & Update Context] ←──┘
+```

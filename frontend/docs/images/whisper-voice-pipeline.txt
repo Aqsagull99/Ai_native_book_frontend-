@@ -1,0 +1,47 @@
+# Whisper Voice Processing Pipeline
+
+## Diagram Description
+
+The Whisper Voice Processing Pipeline shows the flow from voice input to robot action:
+
+```
+[Human Voice]
+      ↓
+[Audio Input/Microphone]
+      ↓
+[Audio Preprocessing]
+      ↓
+[Whisper Speech Recognition]
+      ↓
+[Text Transcription]
+      ↓
+[Natural Language Understanding]
+      ↓
+[Command Interpretation]
+      ↓
+[Robot Action Planning]
+      ↓
+[ROS 2 Action Execution]
+      ↓
+[Robot Response]
+```
+
+## Detailed Pipeline Steps
+
+1. **Human Voice**: Natural language command spoken by user
+2. **Audio Input**: Captured via microphone or audio device
+3. **Audio Preprocessing**: Noise reduction, normalization, format conversion
+4. **Whisper Speech Recognition**: Converts speech to text with confidence scores
+5. **Text Transcription**: Clean text representation of spoken command
+6. **Natural Language Understanding**: Parse meaning and intent from text
+7. **Command Interpretation**: Map natural language to robot actions
+8. **Robot Action Planning**: Generate sequence of executable actions
+9. **ROS 2 Action Execution**: Execute planned actions on robot
+10. **Robot Response**: Physical action or feedback to user
+
+## Alternative Visualization
+
+```
+Input → Processing → Output
+Voice → Whisper → Text → NLU → Action → Robot
+```

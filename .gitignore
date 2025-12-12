@@ -1,0 +1,116 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+ENV/
+
+# Docusaurus
+.build/
+.docusaurus/
+.cache/
+.dist/
+docs/build/
+website/build/
+website/static/css/*.min.css
+website/static/js/*.min.js
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.DS_Store?
+ehthumbs.db
+Icon?
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+coverage/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Distribution
+dist/
+build/
+*.tar.gz
+*.tar
+*.zip
+
+# Documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# ROS 2 specific
+.ros/
+log/
+.rospkg/
+ros_ws/devel/
+ros_ws/build/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.nox/
+coverage.xml
+*.cover
+*.log
+.git/
+.mypy_cache/
+.pyre/
+.pytype/
+coverage.xml
+*.coverage
+*.cover
+*.log

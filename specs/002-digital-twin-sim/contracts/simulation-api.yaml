@@ -1,0 +1,259 @@
+# Simulation API Contract for Digital Twin Module
+openapi: 3.0.0
+info:
+  title: Gazebo-Unity Simulation API
+  description: API for controlling and interacting with Gazebo and Unity simulation environments
+  version: 1.0.0
+
+paths:
+  /simulation/world:
+    get:
+      summary: Get current simulation world state
+      responses:
+        '200':
+          description: Current world state including robot positions and environment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorldState'
+    post:
+      summary: Load a new simulation world
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                world_file:
+                  type: string
+                  description: Path to the world file to load
+                config:
+                  type: object
+                  description: Additional configuration parameters
+      responses:
+        '200':
+          description: World loaded successfully
+        '400':
+          description: Invalid world file or configuration
+
+  /simulation/control:
+    post:
+      summary: Send control commands to simulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ControlCommand'
+      responses:
+        '200':
+          description: Command executed successfully
+        '400':
+          description: Invalid command format
+
+  /sensors/data:
+    get:
+      summary: Get current sensor data
+      parameters:
+        - name: sensor_type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [lidar, depth_camera, imu, camera]
+          description: Filter by sensor type
+        - name: robot_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by specific robot
+      responses:
+        '200':
+          description: Sensor data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorData'
+
+  /simulation/state:
+    get:
+      summary: Get simulation state (running, paused, etc.)
+      responses:
+        '200':
+          description: Current simulation state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationState'
+    put:
+      summary: Set simulation state
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                  enum: [running, paused, stopped]
+                  description: Desired simulation state
+      responses:
+        '200':
+          description: State changed successfully
+
+components:
+  schemas:
+    WorldState:
+      type: object
+      properties:
+        time:
+          type: number
+          description: Current simulation time in seconds
+        robots:
+          type: array
+          items:
+            $ref: '#/components/schemas/RobotState'
+        environment_objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvironmentObject'
+        physics_properties:
+          $ref: '#/components/schemas/PhysicsProperties'
+
+    RobotState:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the robot
+        position:
+          $ref: '#/components/schemas/Position'
+        orientation:
+          $ref: '#/components/schemas/Orientation'
+        joint_states:
+          type: array
+          items:
+            $ref: '#/components/schemas/JointState'
+        sensors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SensorState'
+
+    Position:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          type: number
+
+    Orientation:
+      type: object
+      properties:
+        roll:
+          type: number
+        pitch:
+          type: number
+        yaw:
+          type: number
+
+    JointState:
+      type: object
+      properties:
+        name:
+          type: string
+        position:
+          type: number
+        velocity:
+          type: number
+        effort:
+          type: number
+
+    SensorState:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [lidar, depth_camera, imu, camera]
+        active:
+          type: boolean
+
+    EnvironmentObject:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        position:
+          $ref: '#/components/schemas/Position'
+        properties:
+          type: object
+          description: Physical properties of the object
+
+    PhysicsProperties:
+      type: object
+      properties:
+        gravity:
+          $ref: '#/components/schemas/Vector3'
+        friction_model:
+          type: string
+        solver_type:
+          type: string
+
+    Vector3:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          type: number
+
+    ControlCommand:
+      type: object
+      properties:
+        robot_id:
+          type: string
+          description: ID of the robot to control
+        command_type:
+          type: string
+          enum: [move_to, joint_control, sensor_config, start_simulation, stop_simulation]
+        parameters:
+          type: object
+          description: Command-specific parameters
+
+    SensorData:
+      type: object
+      properties:
+        timestamp:
+          type: number
+        sensor_id:
+          type: string
+        sensor_type:
+          type: string
+          enum: [lidar, depth_camera, imu, camera]
+        data:
+          type: object
+          description: Raw sensor data in appropriate format
+
+    SimulationState:
+      type: object
+      properties:
+        state:
+          type: string
+          enum: [running, paused, stopped, initializing]
+        current_time:
+          type: number
+          description: Current simulation time in seconds
+        real_time_factor:
+          type: number
+          description: Ratio of simulation time to real time

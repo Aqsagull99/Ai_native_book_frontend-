@@ -1,0 +1,47 @@
+<svg width="700" height="300" xmlns="http://www.w3.org/2000/svg">
+  <title>Simulation Workflow</title>
+  <style>
+    .node { fill: #e8f5e8; stroke: #388e3c; stroke-width: 2px; }
+    .text { font-family: Arial, sans-serif; font-size: 14px; text-anchor: middle; }
+    .arrow { stroke: #388e3c; stroke-width: 2; marker-end: url(#arrowhead); }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#388e3c" />
+    </marker>
+  </defs>
+
+  <!-- Simulation Workflow -->
+  <rect x="30" y="100" width="120" height="60" class="node" rx="10" />
+  <text x="90" y="135" class="text">Model</text>
+  <text x="90" y="150" class="text">Creation</text>
+
+  <rect x="180" y="100" width="120" height="60" class="node" rx="10" />
+  <text x="240" y="135" class="text">Physics</text>
+  <text x="240" y="150" class="text">Simulation</text>
+
+  <rect x="330" y="100" width="120" height="60" class="node" rx="10" />
+  <text x="390" y="135" class="text">Sensor</text>
+  <text x="390" y="150" class="text">Simulation</text>
+
+  <rect x="480" y="100" width="120" height="60" class="node" rx="10" />
+  <text x="540" y="135" class="text">Robot</text>
+  <text x="540" y="150" class="text">Control</text>
+
+  <rect x="630" y="100" width="120" height="60" class="node" rx="10" />
+  <text x="690" y="135" class="text">Real</text>
+  <text x="690" y="150" class="text">World</text>
+
+  <!-- Arrows -->
+  <line x1="150" y1="130" x2="180" y2="130" class="arrow" />
+  <line x1="300" y1="130" x2="330" y2="130" class="arrow" />
+  <line x1="450" y1="130" x2="480" y2="130" class="arrow" />
+  <line x1="600" y1="130" x2="630" y2="130" class="arrow" />
+
+  <!-- Feedback loop -->
+  <line x1="690" y1="160" x2="690" y2="200" class="arrow" />
+  <line x1="690" y1="200" x2="90" y2="200" class="arrow" />
+  <line x1="90" y1="200" x2="90" y2="160" class="arrow" />
+
+  <text x="380" y="50" class="text">Simulation to Real World Transfer</text>
+</svg>
