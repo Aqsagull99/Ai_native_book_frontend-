@@ -15,6 +15,7 @@ interface AuthContextType {
   signup: (email: string, password: string, software_experience: string, hardware_experience: string) => Promise<void>;
   updateProfile: (software_experience?: string, hardware_experience?: string) => Promise<void>;
   fetchProfile: (email: string) => Promise<void>;
+  refreshPersonalization: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,7 +48,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/signin', {
+      // Safely handle environment variable for Docusaurus
+      let BACKEND_URL = 'http://localhost:8001';
+      if (typeof process !== 'undefined' && process && process.env) {
+        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+      }
+      const response = await fetch(`${BACKEND_URL}/api/auth/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,10 +69,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await response.json();
 
       // Store token and user info in localStorage
-      localStorage.setItem('token', 'mock-token'); // In real implementation, use actual token
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
+      }
       localStorage.setItem('userEmail', email);
 
-      // Fetch user profile after login
+      // Set the user in state directly from the response data
+      const loggedInUser: User = {
+        id: data.user_id,
+        email: data.email,
+        software_experience: 'beginner', // Will be updated by fetchProfile
+        hardware_experience: 'none'      // Will be updated by fetchProfile
+      };
+      setUser(loggedInUser);
+
+      // Fetch user profile after login to get experience levels
       await fetchProfile(email);
     } catch (error) {
       console.error('Login error:', error);
@@ -76,7 +93,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signup = async (email: string, password: string, software_experience: string, hardware_experience: string) => {
     try {
-      const response = await fetch('/api/auth/signup', {
+      // Safely handle environment variable for Docusaurus
+      let BACKEND_URL = 'http://localhost:8001';
+      if (typeof process !== 'undefined' && process && process.env) {
+        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+      }
+      const response = await fetch(`${BACKEND_URL}/api/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +119,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await response.json();
 
       // Store token and user info in localStorage
-      localStorage.setItem('token', 'mock-token'); // In real implementation, use actual token
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
+      }
       localStorage.setItem('userEmail', email);
 
       // Set the user in state
@@ -122,7 +146,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchProfile = async (email: string) => {
     try {
-      const response = await fetch(`/api/auth/profile?email=${encodeURIComponent(email)}`, {
+      // Safely handle environment variable for Docusaurus
+      let BACKEND_URL = 'http://localhost:8001';
+      if (typeof process !== 'undefined' && process && process.env) {
+        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+      }
+      const response = await fetch(`${BACKEND_URL}/api/auth/profile?email=${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +177,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         hardware_experience: profileData.hardware_experience
       };
 
-      setUser(userProfile);
+      // Update user state with profile data
+      setUser(prevUser => ({
+        ...prevUser,
+        ...userProfile
+      }));
     } catch (error) {
       console.error('Fetch profile error:', error);
       throw error;
@@ -161,7 +194,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     try {
-      const response = await fetch(`/api/auth/profile?email=${encodeURIComponent(user.email)}`, {
+      // Safely handle environment variable for Docusaurus
+      let BACKEND_URL = 'http://localhost:8001';
+      if (typeof process !== 'undefined' && process && process.env) {
+        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+      }
+      const response = await fetch(`${BACKEND_URL}/api/auth/profile?email=${encodeURIComponent(user.email)}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -178,19 +216,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error(errorData.detail || 'Failed to update profile');
       }
 
-      const data = await response.json();
+      await response.json(); // Consume the response but we don't need the data
 
       // Update user in state
+      const updatedUser = { ...user };
       if (software_experience) {
-        setUser(prev => prev ? { ...prev, software_experience } : null);
+        updatedUser.software_experience = software_experience;
       }
       if (hardware_experience) {
-        setUser(prev => prev ? { ...prev, hardware_experience } : null);
+        updatedUser.hardware_experience = hardware_experience;
       }
+      setUser(updatedUser);
     } catch (error) {
       console.error('Update profile error:', error);
       throw error;
     }
+  };
+
+  const refreshPersonalization = () => {
+    // This function would be called to refresh personalization when needed
+    // For now, it's a placeholder that can be called when personalization needs updating
   };
 
   const value = {
@@ -200,7 +245,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     signup,
     updateProfile,
-    fetchProfile
+    fetchProfile,
+    refreshPersonalization
   };
 
   return (

@@ -5,11 +5,15 @@ sidebar_position: 1
 
 # Introduction to ROS 2 Middleware: The Digital Nervous System
 
+![ROS 2 Architecture](../images/robot-pipeline.svg)
+
 ## Overview
 
 ROS 2 (Robot Operating System 2) serves as the "digital nervous system" of humanoid robots, enabling seamless communication between various hardware and software components. It uses Data Distribution Service (DDS) as its communication middleware, providing robust, real-time communication capabilities essential for humanoid robot control.
 
 ## The Nervous System Metaphor
+
+![Nervous System Comparison](../images/perception-planning-action-chain.svg)
 
 The comparison of ROS 2 to a nervous system is particularly apt for humanoid robots because:
 

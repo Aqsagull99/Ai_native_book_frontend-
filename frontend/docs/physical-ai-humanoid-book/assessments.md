@@ -5,6 +5,8 @@ sidebar_position: 5
 
 # Assessments
 
+![Assessment Structure](../images/robot-pipeline.svg)
+
 ## Overview
 
 This chapter provides structured assessments to validate understanding of Physical AI and Humanoid Robotics concepts. The assessments include ROS 2 package assignments, Gazebo simulation tasks, Isaac perception pipeline projects, and preparation for the capstone project.

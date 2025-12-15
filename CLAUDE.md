@@ -208,3 +208,12 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Python 3.12, TypeScript/JavaScript for frontend + FastAPI, Better-Auth, SQLAlchemy, asyncpg, Neon Postgres, Docusaurus (005-better-auth)
+- Neon Postgres database for user profile information (005-better-auth)
+- Python 3.12, TypeScript/JavaScript for frontend + FastAPI, Better-Auth, SQLAlchemy, asyncpg, Docusaurus, React (006-personalize-content)
+- Neon Postgres database for user profile information and personalization data (006-personalize-content)
+
+## Recent Changes
+- 005-better-auth: Added Python 3.12, TypeScript/JavaScript for frontend + FastAPI, Better-Auth, SQLAlchemy, asyncpg, Neon Postgres, Docusaurus

@@ -9,6 +9,10 @@ sidebar_position: 1
 
 Physical AI refers to AI systems that operate in and interact with the real physical world, as opposed to purely digital environments. This paradigm represents a fundamental shift from traditional AI that processes abstract data to AI that must navigate, understand, and manipulate the physical environment.
 
+![Physical AI Concept](../images/perception-planning-action-chain.svg)
+
+The diagram above illustrates the perception-planning-action cycle that is fundamental to Physical AI systems.
+
 ## Core Concepts
 
 Physical AI systems must integrate multiple capabilities:
@@ -67,6 +71,10 @@ Modern Physical AI systems typically involve several key components:
 - **Computation**: Edge computing platforms for real-time processing
 - **Actuation**: Motors, grippers, and other physical interfaces
 - **Connectivity**: Communication systems for coordination and remote operation
+
+![Physical AI System Architecture](../images/robot-pipeline.svg)
+
+This diagram shows the complete pipeline of a Physical AI system, from sensing to action.
 
 ## Step-by-Step Examples with Modern Robotics Tools
 

@@ -4,6 +4,19 @@
  * work well for content-centric websites.
  */
 
+/* Animated gradient background */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #2e8555;
@@ -27,4 +40,449 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Global black background for all pages */
+body {
+  background: linear-gradient(-45deg, #000000, #000000) !important;
+  color: #ffffff !important;
+  min-height: 100vh;
+}
+
+/* Dark theme for all page content */
+html[data-theme='dark'] {
+  --ifm-background-color: #000000;
+  --ifm-background-surface-color: #000000;
+  --ifm-color-content: #ffffff;
+  --ifm-color-content-secondary: #e0e0e0;
+  --ifm-navbar-background-color: #000000;
+  --ifm-footer-background-color: #000000;
+}
+
+/* Global container styling */
+.container {
+  background: transparent !important;
+}
+
+/* Glassmorphism card style for reusable component */
+.glassmorphism-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+  padding: 2rem !important;
+  color: #ffffff !important;
+}
+
+/* Gradient accent for buttons and highlights */
+.gradient-accent {
+  background: linear-gradient(45deg, #f9a825, #2e7d32, #ad1457) !important;
+  background-size: 400% 400% !important;
+  animation: gradient 15s ease infinite !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Dark form styles */
+.auth-form-input,
+.form-control {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  padding: 0.75rem !important;
+  border-radius: 8px !important;
+}
+
+.auth-form-input:focus,
+.form-control:focus {
+  outline: none !important;
+  border-color: #f9a825 !important;
+  box-shadow: 0 0 0 2px rgba(249, 168, 37, 0.3) !important;
+}
+
+/* Dark button styles */
+.button--primary,
+.auth-form-button {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 1rem 2rem !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.button--primary:hover,
+.auth-form-button:hover:not(:disabled) {
+  transform: scale(1.05) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 255, 255, 0.2) !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.button--secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  color: white !important;
+}
+
+/* Text and content styling */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff !important;
+}
+
+p, span, div {
+  color: #e0e0e0 !important;
+}
+
+/* Alert styles for dark theme */
+.alert {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+}
+
+.alert--success {
+  background: rgba(46, 125, 50, 0.2) !important;
+  border-color: rgba(46, 125, 50, 0.4) !important;
+}
+
+.alert--error {
+  background: rgba(173, 20, 87, 0.2) !important;
+  border-color: rgba(173, 20, 87, 0.4) !important;
+}
+
+/* Link styles */
+.navbar__link,
+.menu__link,
+.a {
+  color: #e0e0e0 !important;
+}
+
+.navbar__link:hover,
+.menu__link:hover,
+.a:hover {
+  color: #ffffff !important;
+}
+
+/* Docs sidebar styling with glassmorphism */
+.menu {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.menu__list {
+  background: transparent !important;
+}
+
+.menu__link {
+  color: #e0e0e0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.menu__link:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.menu__link--active {
+  color: #f9a825 !important;
+  background: transparent !important;
+  position: relative;
+}
+
+.menu__link--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, #2e7d32, #ad1457) !important;
+  border-radius: 2px;
+}
+
+.menu__category {
+  color: #f9a825 !important;
+  font-weight: 600 !important;
+}
+
+/* Docs content area styling */
+.main-wrapper {
+  background: #000000 !important;
+}
+
+.docContent {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  border-radius: 12px !important;
+  padding: 2rem !important;
+  margin: 1rem 0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Heading hierarchy styling */
+h1 {
+  color: #ad1457 !important; /* Dark pink */
+  font-size: 2.5rem !important;
+  font-weight: bold !important;
+  margin-bottom: 1.5rem !important;
+  position: relative;
+}
+
+h1::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(to right, #2e7d32, #ad1457) !important;
+  margin-top: 10px;
+  border-radius: 2px;
+}
+
+h2 {
+  color: #2e7d32 !important; /* Dark green */
+  font-size: 2rem !important;
+  font-weight: bold !important;
+  margin: 1.8rem 0 1rem 0 !important;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(46, 125, 50, 0.3) !important;
+}
+
+h3 {
+  color: #f9a825 !important; /* Dark yellow */
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin: 1.5rem 0 0.8rem 0 !important;
+}
+
+h4 {
+  color: #e0e0e0 !important;
+  font-size: 1.2rem !important;
+  font-weight: 500 !important;
+  margin: 1.2rem 0 0.6rem 0 !important;
+}
+
+/* Docs content text styling */
+.markdown {
+  color: #e0e0e0 !important;
+}
+
+.markdown a {
+  color: #f9a825 !important;
+}
+
+.markdown a:hover {
+  color: #ffd54f !important;
+}
+
+.markdown p {
+  line-height: 1.7 !important;
+  margin-bottom: 1rem !important;
+  color: #e0e0e0 !important;
+}
+
+/* Next/Previous navigation styling with glassmorphism */
+.pagination-nav {
+  margin: 2rem 0 !important;
+  display: flex !important;
+  gap: 1rem !important;
+  flex-wrap: wrap !important;
+}
+
+.pagination-nav__item {
+  flex: 1 !important;
+  min-width: 200px !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s ease !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+}
+
+.pagination-nav__item:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.pagination-nav__link {
+  height: 100% !important;
+  padding: 1.5rem !important;
+  display: block !important;
+  height: auto !important;
+}
+
+.pagination-nav__sublabel {
+  color: #2e7d32 !important; /* Dark green accent */
+  font-size: 0.85rem !important;
+  margin-bottom: 0.5rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.pagination-nav__label {
+  color: #e0e0e0 !important;
+  font-weight: 500 !important;
+  font-size: 1rem !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Add accent colors following the theme: Dark Green, Dark Pink, Dark Yellow */
+.pagination-nav__item:first-child .pagination-nav__sublabel { /* Previous button */
+  color: #ad1457 !important; /* Dark pink */
+}
+
+.pagination-nav__item:last-child .pagination-nav__sublabel { /* Next button */
+  color: #f9a825 !important; /* Dark yellow */
+}
+
+/* Hover effects for accent colors */
+.pagination-nav__link:hover .pagination-nav__label {
+  color: #ffffff !important; /* White on hover for better contrast */
+}
+
+.pagination-nav__link:hover .pagination-nav__sublabel {
+  color: #ffffff !important; /* White on hover for better contrast */
+}
+
+.pagination-nav__item:first-child:hover .pagination-nav__sublabel {
+  color: #d0538e !important; /* Lighter pink on hover */
+}
+
+.pagination-nav__item:last-child:hover .pagination-nav__sublabel {
+  color: #ffd54f !important; /* Lighter yellow on hover */
+}
+
+/* Ensure no white backgrounds */
+.pagination-nav__item,
+.pagination-nav__link {
+  background: transparent !important;
+}
+
+/* Code blocks styling for docs */
+.prism-code {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem !important;
+}
+
+/* Personalization button styling */
+.personalization-button {
+  background: linear-gradient(45deg, #f9a825, #2e7d32) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(249, 168, 37, 0.3) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.personalization-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(249, 168, 37, 0.4) !important;
+  background: linear-gradient(45deg, #ffd54f, #4caf50) !important;
+}
+
+.personalization-button:disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+}
+
+/* Already personalized button styling */
+.personalization-button[disabled] {
+  background: linear-gradient(45deg, #4caf50, #66bb6a) !important;
+  cursor: default !important;
+}
+
+/* Responsive design for glassmorphism cards */
+@media screen and (max-width: 996px) {
+  .glassmorphism-card {
+    padding: 1.5rem !important;
+    margin: 1rem !important;
+  }
+
+  .auth-form-container {
+    padding: 1.5rem !important;
+    margin: 1rem !important;
+  }
+
+  .col--6 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  .col--offset-3 {
+    margin-left: 0 !important;
+  }
+
+  /* Responsive docs sidebar */
+  .menu {
+    background: rgba(0, 0, 0, 0.9) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Responsive docs content */
+  .docContent {
+    padding: 1.5rem !important;
+    margin: 0.5rem 0 !important;
+  }
+
+  /* Responsive navigation */
+  .pagination-nav__item {
+    margin: 0.5rem 0 !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .glassmorphism-card {
+    padding: 1rem !important;
+  }
+
+  .auth-form-container {
+    padding: 1rem !important;
+  }
+
+  .button--primary,
+  .auth-form-button {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Mobile heading sizes */
+  h1 {
+    font-size: 2rem !important;
+  }
+
+  h2 {
+    font-size: 1.6rem !important;
+  }
+
+  h3 {
+    font-size: 1.3rem !important;
+  }
 }

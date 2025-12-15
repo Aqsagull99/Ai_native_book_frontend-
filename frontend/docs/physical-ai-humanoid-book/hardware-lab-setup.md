@@ -5,6 +5,8 @@ sidebar_position: 3
 
 # Hardware & Lab Setup
 
+![Robot Hardware Architecture](../images/robot-pipeline.svg)
+
 ## Overview
 
 Setting up an appropriate hardware environment is crucial for working with Physical AI and humanoid robotics. This chapter provides guidance on configuring digital twin workstations, edge AI hardware, and robot lab environments with appropriate specifications for different use cases and budgets.
@@ -88,6 +90,8 @@ ReSpeaker provides excellent audio processing capabilities for voice-enabled rob
 - **Use case**: Complex voice interaction, noise cancellation
 
 ## Robot Lab Tiers
+
+![Lab Setup Tiers](../images/simulation-workflow.svg)
 
 ### Proxy Tier (Simulation Only)
 Perfect for initial learning and development without physical hardware:

@@ -3,19 +3,72 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from typing import Optional
 from backend.database import get_db
-from backend.models import UserProfile
+from backend.models import User, UserProfile
 import uuid
-import httpx
+import re
 from dotenv import load_dotenv
 import os
+import bcrypt
+from datetime import datetime, timedelta
+from typing import Optional
+import secrets
+from jose import JWTError, jwt
 
 # Load environment variables
 load_dotenv()
 
-router = APIRouter()
+# JWT configuration
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Better-Auth service configuration
-BETTER_AUTH_BASE_URL = os.getenv("BETTER_AUTH_URL", "http://localhost:8000")  # Default to localhost
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """Create a JWT access token."""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def verify_token(token: str):
+    """Verify and decode a JWT token."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return payload
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plain password against a hashed password."""
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+
+def get_password_hash(password: str) -> str:
+    """Hash a plain password, ensuring it doesn't exceed bcrypt's 72-byte limit."""
+    # Ensure password is no longer than 72 bytes for bcrypt
+    # Bcrypt has a hard limit of 72 bytes (not characters) for passwords
+    password_bytes = password.encode('utf-8')
+    if len(password_bytes) > 72:
+        # Truncate to 72 bytes and decode back to string
+        password = password_bytes[:72].decode('utf-8', errors='ignore')
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+router = APIRouter()
 
 # Pydantic models for request/response validation
 class SignupRequest(BaseModel):
@@ -53,64 +106,48 @@ class BetterAuthUserResponse(BaseModel):
     image: Optional[str] = None
 
 
-async def create_better_auth_user(email: str, password: str) -> BetterAuthUserResponse:
-    """
-    Simulate creating a user with Better-Auth service.
-    In a real implementation, this would make an HTTP call to the Better-Auth API.
-    For this implementation, we'll simulate the behavior.
-    """
-    # In a real implementation:
-    # async with httpx.AsyncClient() as client:
-    #     response = await client.post(f"{BETTER_AUTH_BASE_URL}/api/auth/sign-up", json={
-    #         "email": email,
-    #         "password": password
-    #     })
-    #     if response.status_code != 200:
-    #         raise HTTPException(status_code=response.status_code, detail="Better-Auth error")
-    #     return BetterAuthUserResponse(**response.json())
-
-    # For this implementation, we'll simulate the response
-    user_id = str(uuid.uuid4())
-    return BetterAuthUserResponse(
-        id=user_id,
-        email=email,
-        emailVerified=False
-    )
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plain password against a hashed password."""
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
-async def authenticate_better_auth_user(email: str, password: str) -> BetterAuthUserResponse:
-    """
-    Simulate authenticating a user with Better-Auth service.
-    In a real implementation, this would make an HTTP call to the Better-Auth API.
-    For this implementation, we'll simulate the behavior.
-    """
-    # In a real implementation:
-    # async with httpx.AsyncClient() as client:
-    #     response = await client.post(f"{BETTER_AUTH_BASE_URL}/api/auth/sign-in", json={
-    #         "email": email,
-    #         "password": password
-    #     })
-    #     if response.status_code != 200:
-    #         raise HTTPException(status_code=response.status_code, detail="Authentication failed")
-    #     return BetterAuthUserResponse(**response.json())
-
-    # For this implementation, we'll simulate the response
-    # Check if a profile already exists (this simulates checking if user exists in Better-Auth)
-    return BetterAuthUserResponse(
-        id=str(uuid.uuid4()),
-        email=email,
-        emailVerified=True
-    )
+def get_password_hash(password: str) -> str:
+    """Hash a plain password, ensuring it doesn't exceed bcrypt's 72-byte limit."""
+    # Ensure password is no longer than 72 bytes for bcrypt
+    # Bcrypt has a hard limit of 72 bytes (not characters) for passwords
+    password_bytes = password.encode('utf-8')
+    if len(password_bytes) > 72:
+        # Truncate to 72 bytes and decode back to string
+        password = password_bytes[:72].decode('utf-8', errors='ignore')
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 
 @router.post("/signup")
 async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
     """
-    Register a new user with experience levels via Better-Auth.
+    Register a new user with experience levels.
     """
     try:
-        # First, create the user in Better-Auth
-        better_auth_user = await create_better_auth_user(request.email, request.password)
+        # Input validation
+        if request.software_experience not in ["beginner", "intermediate", "advanced"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid software experience level. Must be 'beginner', 'intermediate', or 'advanced'."
+            )
+
+        if request.hardware_experience not in ["none", "basic", "advanced"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid hardware experience level. Must be 'none', 'basic', or 'advanced'."
+            )
+
+        # Validate email format using a simple regex
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, request.email):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid email format."
+            )
 
         # Check if user profile already exists in our database
         existing_profile = await db.execute(
@@ -120,20 +157,47 @@ async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
 
         if existing_profile:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User profile already exists"
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with this email already exists"
             )
 
-        # Create user profile with the user ID from Better-Auth
+        # Generate a unique user ID
+        user_id = str(uuid.uuid4())
+
+        # Check if user already exists in the users table
+        existing_user = await db.execute(
+            User.__table__.select().where(User.email == request.email)
+        )
+        existing_user = existing_user.fetchone()
+
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with this email already exists"
+            )
+
+        # Hash the password
+        hashed_password = get_password_hash(request.password)
+
+        # Create user in the users table
+        user = User(
+            user_id=user_id,
+            email=request.email,
+            hashed_password=hashed_password
+        )
+
+        # Create user profile in the user_profiles table
         user_profile = UserProfile(
-            user_id=better_auth_user.id,
+            user_id=user_id,
             email=request.email,
             software_experience=request.software_experience,
             hardware_experience=request.hardware_experience
         )
 
+        db.add(user)
         db.add(user_profile)
         await db.commit()
+        await db.refresh(user)
         await db.refresh(user_profile)
 
         return {
@@ -155,11 +219,35 @@ async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
 @router.post("/signin")
 async def signin(request: SigninRequest, db: AsyncSession = Depends(get_db)):
     """
-    Authenticate user via Better-Auth.
+    Authenticate user.
     """
     try:
-        # Authenticate the user with Better-Auth
-        better_auth_user = await authenticate_better_auth_user(request.email, request.password)
+        # Validate email format using a simple regex
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, request.email):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid email format."
+            )
+
+        # Find the user in the database
+        result = await db.execute(
+            User.__table__.select().where(User.email == request.email)
+        )
+        user = result.fetchone()
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password"
+            )
+
+        # Verify the password
+        if not verify_password(request.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password"
+            )
 
         # Check if user profile exists in our database
         result = await db.execute(
@@ -168,26 +256,22 @@ async def signin(request: SigninRequest, db: AsyncSession = Depends(get_db)):
         user_profile = result.fetchone()
 
         if not user_profile:
-            # If no profile exists but user is authenticated, create a basic profile
-            # This could happen if user signed up through Better-Auth but not through our app
-            new_profile = UserProfile(
-                user_id=better_auth_user.id,
-                email=request.email,
-                software_experience="beginner",  # Default value
-                hardware_experience="none"      # Default value
+            # If no profile exists but user is authenticated, this shouldn't happen in this implementation
+            # since we create profile on signup, but we'll handle it gracefully
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User profile not found"
             )
-            db.add(new_profile)
-            await db.commit()
-            await db.refresh(new_profile)
 
-            return {
-                "message": "User authenticated successfully",
-                "email": request.email,
-                "user_id": new_profile.user_id,
-                "new_profile_created": True
-            }
+        # Create access token
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user_profile.user_id}, expires_delta=access_token_expires
+        )
 
         return {
+            "access_token": access_token,
+            "token_type": "bearer",
             "message": "User authenticated successfully",
             "email": request.email,
             "user_id": user_profile.user_id

@@ -8,7 +8,9 @@ const SigninPage: React.FC = () => {
       <div className="container margin-vert--lg">
         <div className="row">
           <div className="col col--6 col--offset-3">
-            <SigninForm />
+            <div className="glassmorphism-card">
+              <SigninForm />
+            </div>
           </div>
         </div>
       </div>

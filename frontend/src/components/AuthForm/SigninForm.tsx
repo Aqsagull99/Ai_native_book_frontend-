@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from '@docusaurus/router';
 import { useAuth } from '../../contexts/AuthContext';
 import AuthForm from './AuthForm';
 
@@ -10,7 +10,7 @@ const SigninForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +19,7 @@ const SigninForm: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/'); // Redirect to home after successful signin
+      history.push('/profile'); // Redirect to profile after successful signin
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during signin');
     } finally {

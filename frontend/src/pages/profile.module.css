@@ -1,0 +1,209 @@
+/**
+ * CSS module for profile page styling with dark theme and glassmorphism
+ */
+
+/* Profile container with glassmorphism effect */
+.profileContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  color: #ffffff;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Profile heading with gradient accent */
+.profileHeading {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  text-align: center;
+  position: relative;
+  width: 100%;
+}
+
+.profileHeading::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #f9a825, #2e7d32, #ad1457);
+  margin: 0.5rem auto 1.5rem;
+  border-radius: 2px;
+}
+
+/* Message container for success/error messages */
+.messageContainer {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.messageContainer.success {
+  background: rgba(46, 125, 50, 0.2);
+  border: 1px solid rgba(46, 125, 50, 0.4);
+  color: #a5d6a7;
+}
+
+.messageContainer.error {
+  background: rgba(173, 20, 87, 0.2);
+  border: 1px solid rgba(173, 20, 87, 0.4);
+  color: #e57373;
+}
+
+/* Profile field container */
+.profileField {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+/* Label styling */
+.profileLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Form-style field container for display mode */
+.profileFieldDisplay {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  font-size: 1rem;
+  width: 100%;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Editable select field */
+.profileFieldEdit {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  color: #ffffff !important;
+  font-size: 1rem;
+  width: 100%;
+  cursor: pointer;
+}
+
+.profileFieldEdit:focus {
+  outline: none !important;
+  border-color: #f9a825 !important;
+  box-shadow: 0 0 0 2px rgba(249, 168, 37, 0.3) !important;
+}
+
+/* Bonus points section */
+.bonusPointsSection {
+  width: 100%;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.bonusPointsTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 0.5rem;
+}
+
+.bonusPointsValue {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #f9a825;
+  background: rgba(249, 168, 37, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 100px;
+}
+
+/* Button group styling */
+.buttonGroup {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.editButton, .saveButton, .cancelButton {
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+}
+
+.editButton {
+  background: rgba(46, 125, 50, 0.7) !important;
+}
+
+.editButton:hover {
+  background: rgba(46, 125, 50, 0.9) !important;
+  transform: translateY(-2px) !important;
+}
+
+.saveButton {
+  background: rgba(46, 125, 50, 0.7) !important;
+}
+
+.saveButton:hover {
+  background: rgba(46, 125, 50, 0.9) !important;
+  transform: translateY(-2px) !important;
+}
+
+.cancelButton {
+  background: rgba(173, 20, 87, 0.7) !important;
+}
+
+.cancelButton:hover {
+  background: rgba(173, 20, 87, 0.9) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .profileContainer {
+    padding: 1.5rem;
+    margin: 0 1rem;
+  }
+
+  .profileHeading {
+    font-size: 1.5rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .editButton, .saveButton, .cancelButton {
+    width: 100%;
+    max-width: 200px;
+  }
+}

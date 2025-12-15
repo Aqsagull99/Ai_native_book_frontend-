@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { usePersonalization } from '../contexts/PersonalizationContext';
+import BonusPointsDisplay from '../components/Personalization/BonusPointsDisplay';
 import Layout from '@theme/Layout';
+import styles from './profile.module.css';
 
 const ProfilePage: React.FC = () => {
   const { user, loading, updateProfile } = useAuth();
@@ -61,25 +64,30 @@ const ProfilePage: React.FC = () => {
       <div className="container margin-vert--lg">
         <div className="row">
           <div className="col col--6 col--offset-3">
-            <h1>User Profile</h1>
+            <div className={styles.profileContainer}>
+              <h1 className={styles.profileHeading}>User Profile</h1>
 
-            {message && (
-              <div className={`alert ${message.includes('successfully') ? 'alert--success' : 'alert--error'}`}>
-                {message}
+              {message && (
+                <div className={`${styles.messageContainer} ${message.includes('successfully') ? styles.success : styles.error}`}>
+                  {message}
+                </div>
+              )}
+
+              <div className={styles.profileField}>
+                <label className={styles.profileLabel}>Email</label>
+                <div className={styles.profileFieldDisplay}>
+                  {user.email}
+                </div>
               </div>
-            )}
 
-            <div className="margin-vert--md">
-              <p><strong>Email:</strong> {user.email}</p>
-
-              <div className="margin-vert--md">
-                <label htmlFor="softwareExperience" className="form-label">
-                  <strong>Software Experience:</strong>
+              <div className={styles.profileField}>
+                <label htmlFor="softwareExperience" className={styles.profileLabel}>
+                  Software Experience
                 </label>
                 {isEditing ? (
                   <select
                     id="softwareExperience"
-                    className="form-control"
+                    className={styles.profileFieldEdit}
                     value={softwareExperience}
                     onChange={(e) => setSoftwareExperience(e.target.value)}
                   >
@@ -88,18 +96,20 @@ const ProfilePage: React.FC = () => {
                     <option value="advanced">Advanced</option>
                   </select>
                 ) : (
-                  <p>{softwareExperience}</p>
+                  <div className={styles.profileFieldDisplay}>
+                    {softwareExperience}
+                  </div>
                 )}
               </div>
 
-              <div className="margin-vert--md">
-                <label htmlFor="hardwareExperience" className="form-label">
-                  <strong>Hardware Experience:</strong>
+              <div className={styles.profileField}>
+                <label htmlFor="hardwareExperience" className={styles.profileLabel}>
+                  Hardware Experience
                 </label>
                 {isEditing ? (
                   <select
                     id="hardwareExperience"
-                    className="form-control"
+                    className={styles.profileFieldEdit}
                     value={hardwareExperience}
                     onChange={(e) => setHardwareExperience(e.target.value)}
                   >
@@ -108,40 +118,49 @@ const ProfilePage: React.FC = () => {
                     <option value="advanced">Advanced</option>
                   </select>
                 ) : (
-                  <p>{hardwareExperience}</p>
+                  <div className={styles.profileFieldDisplay}>
+                    {hardwareExperience}
+                  </div>
                 )}
               </div>
-            </div>
 
-            <div className="button-group margin-vert--md">
-              {!isEditing ? (
-                <button
-                  className="button button--primary"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Edit Profile
-                </button>
-              ) : (
-                <>
+              <div className={styles.bonusPointsSection}>
+                <div className={styles.bonusPointsTitle}>Bonus Points</div>
+                <div className={styles.bonusPointsValue}>
+                  <BonusPointsDisplay showHistory={false} />
+                </div>
+              </div>
+
+              <div className={styles.buttonGroup}>
+                {!isEditing ? (
                   <button
-                    className="button button--primary margin-right--sm"
-                    onClick={handleSave}
+                    className={styles.editButton}
+                    onClick={() => setIsEditing(true)}
                   >
-                    Save Changes
+                    Edit Profile
                   </button>
-                  <button
-                    className="button button--secondary"
-                    onClick={() => {
-                      setIsEditing(false);
-                      // Reset to original values
-                      setSoftwareExperience(user.software_experience);
-                      setHardwareExperience(user.hardware_experience);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </>
-              )}
+                ) : (
+                  <>
+                    <button
+                      className={styles.saveButton}
+                      onClick={handleSave}
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      className={styles.cancelButton}
+                      onClick={() => {
+                        setIsEditing(false);
+                        // Reset to original values
+                        setSoftwareExperience(user.software_experience);
+                        setHardwareExperience(user.hardware_experience);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

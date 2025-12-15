@@ -13,6 +13,9 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # Replace postgresql:// with postgresql+asyncpg:// for async driver
 if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+elif DATABASE_URL and DATABASE_URL.startswith("sqlite:///"):
+    # For SQLite, we need to use sqlite+aiosqlite://
+    DATABASE_URL = DATABASE_URL.replace("sqlite:///", "sqlite+aiosqlite:///")
 
 # Create async engine
 engine = create_async_engine(DATABASE_URL, echo=True)

@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+  title: Personalization API
+  description: API for managing content personalization and bonus points
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+
+paths:
+  /personalization/activate:
+    post:
+      summary: Activate personalization for a chapter
+      description: Allows a user to personalize content for a specific chapter and earn bonus points
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chapter_id
+              properties:
+                chapter_id:
+                  type: string
+                  description: Unique identifier for the chapter to personalize (based on docs folder structure)
+                preferences:
+                  type: object
+                  description: User-specific content customization settings (profile customizations applied to chapter)
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Personalization activated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Content personalized successfully, 50 bonus points awarded"
+                  points_earned:
+                    type: integer
+                    example: 50
+                  personalized_content:
+                    type: object
+                    description: The personalized content based on user profile customizations
+        '400':
+          description: Invalid request - chapter_id missing or invalid
+        '401':
+          description: Unauthorized - user not authenticated
+        '409':
+          description: Conflict - personalization already activated for this chapter
+
+  /personalization/status:
+    get:
+      summary: Get personalization status for a chapter
+      description: Check if a chapter has been personalized by the current user
+      parameters:
+        - name: chapter_id
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Unique identifier for the chapter to check
+      responses:
+        '200':
+          description: Personalization status retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_personalized:
+                    type: boolean
+                    example: true
+                  preferences:
+                    type: object
+                    description: User's personalization preferences for this chapter
+                  points_earned:
+                    type: integer
+                    example: 50
+        '401':
+          description: Unauthorized - user not authenticated
+
+  /personalization/preferences:
+    get:
+      summary: Get all personalization preferences for user
+      description: Retrieve all personalization preferences set by the user
+      responses:
+        '200':
+          description: User preferences retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  preferences:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chapter_id:
+                          type: string
+                          example: "chapter-1"
+                        preferences:
+                          type: object
+                          description: Personalization settings for the chapter
+                        created_at:
+                          type: string
+                          format: date-time
+                        points_earned:
+                          type: integer
+                          example: 50
+        '401':
+          description: Unauthorized - user not authenticated
+
+  /user/bonus-points:
+    get:
+      summary: Get user's bonus points
+      description: Retrieve the total bonus points earned by the user
+      responses:
+        '200':
+          description: Bonus points retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_points:
+                    type: integer
+                    example: 150
+                  points_breakdown:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chapter_id:
+                          type: string
+                          example: "chapter-1"
+                        points:
+                          type: integer
+                          example: 50
+                        earned_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized - user not authenticated

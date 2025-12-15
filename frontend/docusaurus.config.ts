@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'My Site',
+  title: 'Physical AI & Humanoid Robotics',
   tagline: 'Dinosaurs are cool',
   favicon: 'img/favicon.ico',
 
@@ -35,14 +35,7 @@ const config: Config = {
     locales: ['en'],
   },
 
-  themes: [
-    [
-      '@docusaurus/theme-classic',
-      {
-        customCss: './src/css/custom.css',
-      },
-    ],
-  ],
+  
   presets: [
     [
       'classic',
@@ -69,9 +62,13 @@ const config: Config = {
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
         },
+        theme: {
+          customCss: './src/css/custom.css',
+        },
       } satisfies Preset.Options,
     ],
   ],
+
 
   themeConfig: {
     // Replace with your project's social card
@@ -80,7 +77,7 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'My Site',
+      title: 'Physical AI & Humanoid Robotics',
       logo: {
         alt: 'My Site Logo',
         src: 'img/logo.svg',
@@ -93,16 +90,10 @@ const config: Config = {
           label: 'Book Contents',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
-        {
-          to: '/signin',
-          label: 'Sign In',
-          position: 'right',
-        },
-        {
-          to: '/signup',
-          label: 'Sign Up',
-          position: 'right',
-        },
+        {to: '/signup', label: 'Sign Up', position: 'right'},
+        {to: '/signin', label: 'Sign In', position: 'right'},
+        {to: '/profile', label: 'Profile', position: 'right'},
+        
         {
           href: 'https://github.com/facebook/docusaurus',
           label: 'GitHub',
@@ -163,3 +154,7 @@ const config: Config = {
 };
 
 export default config;
+
+
+
+

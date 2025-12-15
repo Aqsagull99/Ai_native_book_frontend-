@@ -5,6 +5,8 @@ sidebar_position: 4
 
 # Weekly Learning Plan
 
+![Learning Path Overview](../images/perception-planning-action-chain.svg)
+
 ## Overview
 
 This 13-week curriculum provides a structured learning path for mastering Physical AI and Humanoid Robotics. Each week builds upon previous concepts while introducing new tools and techniques. The plan balances theoretical understanding with practical implementation.
@@ -136,6 +138,8 @@ This 13-week curriculum provides a structured learning path for mastering Physic
 - 2 hours final review and presentation
 
 ## Learning Path Structure
+
+![Curriculum Structure](../images/simulation-workflow.svg)
 
 ### Weekly Components
 Each week includes:

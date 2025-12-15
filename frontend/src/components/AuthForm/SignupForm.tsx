@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from '@docusaurus/router';
 import { useAuth } from '../../contexts/AuthContext';
 import AuthForm from './AuthForm';
 
@@ -12,7 +12,7 @@ const SignupForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { signup } = useAuth();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ const SignupForm: React.FC = () => {
 
     try {
       await signup(email, password, softwareExperience, hardwareExperience);
-      navigate('/'); // Redirect to home after successful signup
+      history.push('/profile'); // Redirect to profile after successful signup
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during signup');
     } finally {

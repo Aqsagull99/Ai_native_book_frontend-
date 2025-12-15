@@ -3,21 +3,196 @@
  * and scoped locally.
  */
 
+/* Animated gradient background */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .heroBanner {
   padding: 4rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(-45deg, #f9a825, #2e7d32, #ad1457); /* Dark Yellow, Dark Green, Dark Pink */
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.heroContent {
+  flex: 1;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 2; /* Ensure content is above background */
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.heroSubtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .buttons {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+}
+
+.readBookButton {
+  background-color: rgba(0, 0, 0, 0.7) !important; /* Darker than background to stand out */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 1rem 2rem !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.readBookButton:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 255, 255, 0.2) !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.readBookButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.readBookButton:hover::before {
+  left: 100%;
+}
+
+.heroImage {
+  flex: 1;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  z-index: 2; /* Ensure content is above background */
+}
+
+.heroImageContent {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-height: 400px;
+  object-fit: cover;
+}
+
+/* Glassmorphism effect on the entire hero container */
+.heroContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  z-index: 1;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+.heroContainer {
+  position: relative;
+}
+
+.heroContent,
+.heroImage {
+  position: relative;
+  z-index: 2; /* Ensure content is above the glassmorphism layer */
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem 1rem;
+    min-height: auto;
+  }
+
+  .heroContainer {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .heroContent {
+    align-items: center;
+  }
+
+  .heroTitle {
+    font-size: 2.2rem;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+
+  .heroImageContent {
+    max-height: 250px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .heroTitle {
+    font-size: 1.8rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
+  .readBookButton {
+    padding: 0.8rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
 }

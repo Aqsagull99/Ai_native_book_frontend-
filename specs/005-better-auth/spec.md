@@ -207,3 +207,35 @@ A user accesses the authentication system from different devices and expects a c
 - **SC-005**: User profile retrieval occurs in under 500ms
 - **SC-006**: Frontend authentication UI renders consistently across desktop and mobile platforms
 - **SC-007**: Content personalization adjusts appropriately based on user profile within 1 second of activation
+
+## Clarifications
+### Session 2025-12-12
+
+- Q: What authentication approach should be used for secure user sessions? → A: Use Better-Auth's built-in session management and authentication tokens for secure user sessions
+- Q: How should error responses be formatted? → A: Return appropriate HTTP error codes with descriptive messages
+- Q: What validation approach should be implemented? → A: Implement server-side validation with clear error messages
+- Q: What caching strategy should be used for performance? → A: Implement basic caching for profile data with appropriate TTL
+- Q: How should content personalization be implemented? → A: Client-side personalization based on user profile data
+
+### Functional Requirements *(updated)*
+
+- **FR-001**: System MUST provide a POST /signup endpoint that registers users via Better-Auth
+- **FR-002**: System MUST provide a POST /signin endpoint that authenticates users
+- **FR-003**: System MUST provide a GET /profile endpoint that retrieves user background information for personalization
+- **FR-004**: System MUST store user background information (software and hardware experience levels) in Neon Postgres database
+- **FR-005**: System MUST read database connection details from DATABASE_URL environment variable
+- **FR-006**: System MUST implement async FastAPI routes to handle scalable user authentication
+- **FR-007**: System MUST securely store passwords using Better-Auth's built-in security mechanisms
+- **FR-008**: Frontend MUST display Login & Signup buttons in the header
+- **FR-009**: Frontend MUST provide a signup form that collects email, password, and experience levels (software: beginner/intermediate/advanced, hardware: none/basic/advanced)
+- **FR-010**: Frontend MUST provide a signin form for returning users
+- **FR-011**: System MUST personalize content based on user profile (beginner → simpler examples, advanced → deeper technical explanations)
+- **FR-012**: System MUST have a "Personalize Content" button at chapter start to trigger content adjustment
+- **FR-013**: Frontend MUST reflect login state in the header
+- **FR-014**: System MUST support responsive design for both desktop and mobile access
+- **FR-015**: System MUST handle minimum friction signup flow without unnecessary steps
+- **FR-016**: System MUST implement server-side validation with clear error messages for all user inputs
+- **FR-017**: System MUST use Better-Auth's built-in session management for secure user sessions
+- **FR-018**: System MUST return appropriate HTTP error codes with descriptive messages
+- **FR-019**: System MUST implement basic caching for profile data with appropriate TTL
+- **FR-020**: System MUST implement client-side personalization based on user profile data

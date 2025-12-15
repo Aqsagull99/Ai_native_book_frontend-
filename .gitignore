@@ -114,3 +114,16 @@ coverage.xml
 *.coverage
 *.cover
 *.log
+
+
+# Ignore backend completely
+backend/
+
+# Env files
+.env
+.env.local
+
+# Node stuff
+node_modules/
+
+.env.example

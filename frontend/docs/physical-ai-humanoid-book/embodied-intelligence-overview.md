@@ -5,6 +5,8 @@ sidebar_position: 2
 
 # Embodied Intelligence Overview
 
+![Embodied Intelligence Concept](../images/perception-planning-action-chain.svg)
+
 ## Definition and Principles
 
 Embodied intelligence encompasses AI systems that integrate sensing, processing, and acting in physical environments through robotic bodies. This approach recognizes that intelligence emerges from the interaction between an agent and its environment, rather than existing as abstract computation.
@@ -27,6 +29,8 @@ Embodied systems must effectively integrate multiple sensory modalities:
 - **Interoception**: Internal state monitoring (analogous to biological systems)
 
 ## Motor Control and Coordination
+
+![Motor Control Architecture](../images/simulation-workflow.svg)
 
 Effective embodied intelligence requires sophisticated motor control systems that can:
 
