@@ -59,12 +59,12 @@ class PersonalizationService {
 
     // Check for environment variable in Node.js context
     if (typeof process !== 'undefined' && process && process.env) {
-      apiUrl = process.env.REACT_APP_API_URL || apiUrl;
+      apiUrl = process.env.REACT_APP_API_BASE_URL || apiUrl;
     }
 
     // If in browser and window object exists, we can also check for a global config
-    if (typeof window !== 'undefined' && (window as any).REACT_APP_API_URL) {
-      apiUrl = (window as any).REACT_APP_API_URL;
+    if (typeof window !== 'undefined' && (window as any).REACT_APP_API_BASE_URL) {
+      apiUrl = (window as any).REACT_APP_API_BASE_URL;
     }
 
     this.baseUrl = apiUrl;

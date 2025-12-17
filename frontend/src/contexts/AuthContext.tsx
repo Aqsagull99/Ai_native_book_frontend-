@@ -49,9 +49,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       // Safely handle environment variable for Docusaurus
-      let BACKEND_URL = 'http://localhost:8000';
+      let BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       if (typeof process !== 'undefined' && process && process.env) {
-        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+        BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       }
       const response = await fetch(`${BACKEND_URL}/api/auth/signin`, {
         method: 'POST',
@@ -94,9 +94,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signup = async (email: string, password: string, software_experience: string, hardware_experience: string) => {
     try {
       // Safely handle environment variable for Docusaurus
-      let BACKEND_URL = 'http://localhost:8000';
+      let BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       if (typeof process !== 'undefined' && process && process.env) {
-        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+        BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       }
       const response = await fetch(`${BACKEND_URL}/api/auth/signup`, {
         method: 'POST',
@@ -147,9 +147,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const fetchProfile = async (email: string) => {
     try {
       // Safely handle environment variable for Docusaurus
-      let BACKEND_URL = 'http://localhost:8000';
+      let BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       if (typeof process !== 'undefined' && process && process.env) {
-        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+        BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       }
       const response = await fetch(`${BACKEND_URL}/api/auth/profile?email=${encodeURIComponent(email)}`, {
         method: 'GET',
@@ -195,9 +195,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       // Safely handle environment variable for Docusaurus
-      let BACKEND_URL = 'http://localhost:8000';
+      let BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       if (typeof process !== 'undefined' && process && process.env) {
-        BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+        BACKEND_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
       }
       const response = await fetch(`${BACKEND_URL}/api/auth/profile?email=${encodeURIComponent(user.email)}`, {
         method: 'PUT',

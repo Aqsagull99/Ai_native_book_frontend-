@@ -6,7 +6,7 @@
  */
 
 // Base API URL
-const API_BASE_URL = 'http://localhost:8000'; // Change this to your backend URL
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000'; // Use env var or fallback to localhost
 
 /**
  * Query the RAG agent with a user question.
