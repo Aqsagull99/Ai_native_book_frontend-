@@ -1,0 +1,74 @@
+# API Contract: Vector Retrieval Validation Service
+
+## Endpoints
+
+### POST /validate-search
+Validate semantic search functionality with a query
+
+**Request**:
+```json
+{
+  "query": "string - The search query text",
+  "top_k": "integer - Number of results to return (optional, default: 5)",
+  "validate_metadata": "boolean - Whether to validate metadata preservation (optional, default: true)"
+}
+```
+
+**Response**:
+```json
+{
+  "query": "string - The original query text",
+  "results": [
+    {
+      "content": "string - The retrieved content chunk",
+      "similarity_score": "number - Cosine similarity score (0-1)",
+      "metadata": {
+        "url": "string - Source URL",
+        "title": "string - Document title",
+        "chunk_index": "integer - Index of chunk in source",
+        "source_metadata": "object - Additional source metadata",
+        "created_at": "string - Creation timestamp"
+      },
+      "rank": "integer - Position in results (1-indexed)"
+    }
+  ],
+  "metrics": {
+    "execution_time": "number - Query execution time in seconds",
+    "total_points_in_collection": "integer - Total vectors in collection",
+    "metadata_validation_passed": "boolean - Whether all metadata fields are present"
+  },
+  "validation": {
+    "semantic_relevance": "boolean - Whether results are semantically relevant",
+    "metadata_accuracy": "number - Percentage of metadata fields preserved (0-100)",
+    "consistency": "number - Consistency score across repeated queries (0-100)"
+  }
+}
+```
+
+**Success Response**: `200 OK`
+**Error Response**: `400 Bad Request` or `500 Internal Server Error`
+
+### GET /validation-status
+Get current validation status and metrics
+
+**Response**:
+```json
+{
+  "status": "string - Current validation status (e.g., 'validating', 'completed', 'failed')",
+  "metrics": {
+    "total_queries_executed": "integer - Number of validation queries run",
+    "success_rate": "number - Percentage of successful queries (0-100)",
+    "avg_response_time": "number - Average query response time in seconds",
+    "relevance_accuracy": "number - Percentage of semantically relevant results (0-100)",
+    "metadata_preservation_rate": "number - Percentage of metadata fields preserved (0-100)"
+  },
+  "last_validation_timestamp": "string - ISO timestamp of last validation",
+  "collection_info": {
+    "name": "string - Collection name (e.g., 'ai_native_book')",
+    "total_points": "integer - Number of vectors in collection",
+    "vector_size": "integer - Dimension of vectors"
+  }
+}
+```
+
+**Success Response**: `200 OK`

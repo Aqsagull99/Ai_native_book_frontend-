@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Content Embedding API
+  description: API for crawling, embedding, and storing Docusaurus book content in vector database
+  version: 1.0.0
+paths:
+  /embed-content:
+    post:
+      summary: Start content embedding process for Docusaurus book
+      description: Crawls deployed Docusaurus book pages, extracts content, generates embeddings, and stores in Qdrant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                book_base_url:
+                  type: string
+                  description: Base URL of the deployed Docusaurus book
+                  example: "https://my-book.vercel.app"
+                force_refresh:
+                  type: boolean
+                  description: Whether to force re-processing of all content
+                  default: false
+              required:
+                - book_base_url
+      responses:
+        '200':
+          description: Embedding process completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "completed"
+                  pages_processed:
+                    type: integer
+                    example: 42
+                  chunks_created:
+                    type: integer
+                    example: 128
+                  embeddings_stored:
+                    type: integer
+                    example: 128
+                  processing_time:
+                    type: number
+                    format: float
+                    description: Processing time in seconds
+                    example: 124.5
+        '400':
+          description: Bad request - invalid parameters
+        '500':
+          description: Internal server error during embedding process
+  /embed-content/status:
+    get:
+      summary: Get status of the content embedding process
+      responses:
+        '200':
+          description: Current status of embedding process
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [idle, processing, completed, failed]
+                    example: "idle"
+                  progress:
+                    type: object
+                    properties:
+                      pages_completed:
+                        type: integer
+                        example: 15
+                      total_pages:
+                        type: integer
+                        example: 42
+                      completion_percentage:
+                        type: number
+                        format: float
+                        example: 35.7
+  /embeddings/search:
+    post:
+      summary: Search embeddings by similarity
+      description: Find relevant content chunks based on semantic similarity to query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Query text to find similar content
+                  example: "How to implement ROS2 nodes?"
+                top_k:
+                  type: integer
+                  description: Number of results to return
+                  default: 5
+                  example: 5
+                filters:
+                  type: object
+                  description: Optional filters for search
+                  properties:
+                    page_url:
+                      type: string
+                      description: Filter results by specific page URL
+              required:
+                - query
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        page_url:
+                          type: string
+                          example: "https://my-book.vercel.app/docs/intro"
+                        title:
+                          type: string
+                          example: "Introduction to Robotics"
+                        content:
+                          type: string
+                          example: "Robotics is an interdisciplinary branch of engineering..."
+                        metadata:
+                          type: object
+                          description: Additional metadata about the content chunk
+                        score:
+                          type: number
+                          format: float
+                          description: Similarity score
+                          example: 0.87
+                required:
+                  - results
+        '500':
+          description: Internal server error during search

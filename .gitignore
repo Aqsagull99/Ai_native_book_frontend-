@@ -116,8 +116,6 @@ coverage.xml
 *.log
 
 
-# Ignore backend completely
-backend/
 
 # Env files
 .env
@@ -127,3 +125,10 @@ backend/
 node_modules/
 
 .env.example
+
+
+# Backend
+backend/
+
+
+

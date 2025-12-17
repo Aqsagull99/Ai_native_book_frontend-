@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { PersonalizationProvider, usePersonalization } from './contexts/PersonalizationContext';
+import RagChatbot from './components/RagChatbot';
 
 // Create a context to coordinate between auth and personalization
 interface CoordinationContextType {
@@ -24,6 +25,7 @@ const ProvidersInner: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <CoordinationContext.Provider value={{ syncPersonalizationWithAuth }}>
       {children}
+      <RagChatbot />
     </CoordinationContext.Provider>
   );
 };

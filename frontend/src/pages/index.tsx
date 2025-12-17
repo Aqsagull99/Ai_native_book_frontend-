@@ -4,6 +4,8 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import AboutSection from '@site/src/components/AboutSection';
+import VisualBreathingSpace from '@site/src/components/VisualBreathingSpace';
 import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
@@ -45,22 +47,21 @@ function HomepageHeader() {
 export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <HomepageHeader />
-      <main>
-        <HomepageFeatures />
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-          <h2>Personalization Test</h2>
-          <p>Try the personalization button below (will only show if logged in):</p>
-          <PersonalizationButton
-            chapterId="homepage-test"
-            chapterTitle="Homepage Test Chapter"
-          />
-        </div>
-      </main>
-    </Layout>
+    <div style={{ position: 'relative' }}>
+      <VisualBreathingSpace />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Layout
+          title={`Hello from ${siteConfig.title}`}
+          description="Description will go into a meta tag in <head />"
+        >
+          <HomepageHeader />
+          <main>
+            <HomepageFeatures />
+            <AboutSection />
+          </main>
+        </Layout>
+      </div>
+    </div>
   );
 }
 

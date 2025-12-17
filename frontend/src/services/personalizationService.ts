@@ -55,7 +55,7 @@ class PersonalizationService {
   constructor() {
     // Get API URL from environment or fallback to default
     // In Docusaurus, environment variables need to be properly configured in the build
-    let apiUrl = 'http://localhost:8001';
+    let apiUrl = 'http://localhost:8000';
 
     // Check for environment variable in Node.js context
     if (typeof process !== 'undefined' && process && process.env) {

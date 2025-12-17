@@ -1,0 +1,72 @@
+# API Contract: RAG Agent Service
+
+## Endpoints
+
+### POST /query
+Process a user query using the RAG agent and return a contextual response.
+
+**Request**:
+```json
+{
+  "query_text": "string - The natural language query from the user",
+  "top_k": "integer - Number of results to retrieve from vector database (optional, default: 5)",
+  "temperature": "float - Temperature parameter for LLM generation (optional, default: 0.7)",
+  "max_tokens": "integer - Maximum tokens in response (optional, default: 1000)",
+  "conversation_context": "object - Previous conversation turns for context (optional)",
+  "include_citations": "boolean - Whether to include source citations (optional, default: true)"
+}
+```
+
+**Response**:
+```json
+{
+  "query_text": "string - The original query text",
+  "answer": "string - The generated answer based on retrieved content",
+  "retrieved_chunks": [
+    {
+      "content": "string - The retrieved content chunk",
+      "similarity_score": "number - Cosine similarity score (0-1)",
+      "metadata": {
+        "url": "string - Source URL",
+        "title": "string - Document title",
+        "chunk_index": "integer - Index of chunk in source",
+        "source_metadata": "object - Additional source metadata",
+        "created_at": "string - Creation timestamp"
+      },
+      "rank": "integer - Position in results (1-indexed)"
+    }
+  ],
+  "confidence_score": "number - Overall confidence in the answer (0-1)",
+  "execution_time": "number - Query execution time in seconds",
+  "timestamp": "string - ISO timestamp of response"
+}
+```
+
+**Success Response**: `200 OK`
+**Error Response**: `400 Bad Request` or `500 Internal Server Error`
+
+### GET /health
+Get health status and metrics for the RAG agent service.
+
+**Response**:
+```json
+{
+  "status": "string - Health status ('healthy', 'degraded', 'unhealthy')",
+  "metrics": {
+    "total_queries_processed": "integer - Number of queries processed",
+    "success_rate": "number - Percentage of successful queries (0-100)",
+    "avg_response_time": "number - Average query response time in seconds",
+    "reliability_score": "number - System reliability score (0-1)",
+    "last_error_timestamp": "string - Timestamp of last error (null if none)"
+  },
+  "capabilities": {
+    "llm_model": "string - Currently configured LLM model",
+    "vector_db": "string - Vector database connection status",
+    "max_concurrent_requests": "integer - Maximum supported concurrent requests"
+  },
+  "timestamp": "string - ISO timestamp of health check"
+}
+```
+
+**Success Response**: `200 OK`
+**Error Response**: `500 Internal Server Error`

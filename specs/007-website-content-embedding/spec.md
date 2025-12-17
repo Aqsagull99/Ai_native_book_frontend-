@@ -3,55 +3,49 @@
 **Feature Branch**: `007-website-content-embedding`
 **Created**: 2025-12-14
 **Status**: Draft
+**Updated**: 2025-12-15
 **Input**: User description: "# Website Content Embedding & Vector Storage Pipeline
 
-## Goal
+Goal:
+Prepare the deployed Docusaurus book for RAG by converting website content into vector embeddings and storing them in a vector database.
 
-Prepare the Docusaurus book content for RAG by converting documentation text into vector embeddings and storing them in a vector database.
+Context:
+- Book is deployed on vercel using Docusaurus
+- This spec enables semantic retrieval for a RAG chatbot
+- Embeddings will later be consumed by an OpenAI Agent via FastAPI
 
-## Context
+Success Criteria:
+- All public book pages are processed
+- Text is chunked consistently with metadata
+- Embeddings generated using Cohere models
+- Vectors stored successfully in Qdrant Cloud
+- Data is retrievable by vector similarity search
 
-* Source content is the Docusaurus documentation itself (Markdown files or static build output)
-* This spec enables semantic retrieval for a RAG chatbot
-* Embeddings will later be consumed by an OpenAI Agent via FastAPI
+Constraints:
+- Embedding model: Cohere
+- Vector database: Qdrant Cloud (Free Tier)
+- Source: Deployed website URLs only
+- No agent, API, or frontend logic in this spec
 
-## Success Criteria
-
-* All book content is processed
-* Text is chunked consistently with structured metadata
-* Embeddings are generated using Cohere models
-* Vectors are stored successfully in Qdrant Cloud
-* Data is retrievable by vector similarity search
-
-## Constraints
-
-* Embedding model: Cohere
-* Vector database: Qdrant Cloud (Free Tier)
-* Source: Docusaurus content only (no deployed website crawling)
-* No agent, API, or frontend logic in this spec
-
-## Out of Scope
-
-* Website deployment or hosting (e.g., GitHub Pages)
-* Crawling deployed URLs
-* Query retrieval logic
-* RAG agent behavior
-* Frontend integration
-* User-selected text handling"
+Out of Scope:
+- Query retrieval logic
+- RAG agent behavior
+- Frontend integration
+- User-selected text handling"
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Content Extraction and Processing (Priority: P1)
+### User Story 1 - Content Crawling and Extraction (Priority: P1)
 
-As a system administrator, I want to extract all Docusaurus documentation content and convert it into vector embeddings so that the RAG system can semantically search and retrieve relevant information for users.
+As a system administrator, I want to crawl all public pages of the deployed Docusaurus book and extract text content to convert it into vector embeddings so that the RAG system can semantically search and retrieve relevant information for users.
 
 **Why this priority**: This is the foundational capability that enables the entire RAG system to function. Without properly processed and embedded content, no semantic search functionality is possible.
 
-**Independent Test**: Can be fully tested by running the extraction pipeline on sample Docusaurus content and verifying that text chunks with metadata are created and stored as vector embeddings in the database.
+**Independent Test**: Can be fully tested by running the web crawling pipeline on the deployed site and verifying that text chunks with metadata are created and stored as vector embeddings in the database.
 
 **Acceptance Scenarios**:
 
-1. **Given** Docusaurus documentation exists in the repository, **When** the content extraction pipeline runs, **Then** all Markdown content is processed into structured text chunks with metadata
+1. **Given** the deployed Docusaurus book is accessible at public URLs, **When** the content crawling pipeline runs, **Then** all public book pages are processed into structured text chunks with metadata
 2. **Given** extracted text chunks exist, **When** the embedding generation process runs, **Then** vector embeddings are created using the Cohere model for each text chunk
 
 ---
@@ -81,44 +75,48 @@ As a system administrator, I want to ensure consistent text chunking with proper
 
 **Acceptance Scenarios**:
 
-1. **Given** Docusaurus content with hierarchical structure, **When** the chunking process runs, **Then** metadata preserves document hierarchy, section titles, and content relationships
+1. **Given** deployed Docusaurus content with hierarchical structure, **When** the chunking process runs, **Then** metadata preserves document hierarchy, section titles, and content relationships
 
 ---
 
 ### Edge Cases
 
-- What happens when Docusaurus content contains very large documents that exceed embedding model limits?
-- How does the system handle content updates when Docusaurus documentation changes?
-- How does the system handle documents with special formatting, code blocks, or mathematical formulas?
+- What happens when deployed Docusaurus pages contain very large documents that exceed embedding model limits?
+- How does the system handle content updates when the deployed website changes?
+- How does the system handle pages with special formatting, code blocks, or mathematical formulas?
+- What happens when the deployed website is temporarily unavailable during the crawling process?
 - What happens when the Qdrant Cloud service is temporarily unavailable during the embedding process?
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST extract all Docusaurus documentation content from the source repository
-- **FR-002**: System MUST chunk the extracted text content consistently with configurable parameters (default 512 tokens with 20% overlap between chunks)
-- **FR-003**: System MUST preserve document metadata including title, section hierarchy, and content relationships
-- **FR-004**: System MUST generate vector embeddings using the Cohere embedding model for each text chunk
-- **FR-005**: System MUST store vector embeddings in Qdrant Cloud with associated metadata
-- **FR-006**: System MUST handle content updates by detecting changes and updating only affected embeddings
-- **FR-007**: System MUST validate the quality and completeness of the embedding process
-- **FR-008**: System MUST provide error handling and logging for failed embedding operations
+- **FR-001**: System MUST crawl all public pages of the deployed Docusaurus book from the website URLs
+- **FR-002**: System MUST extract text content from crawled web pages, removing HTML markup and navigation elements
+- **FR-003**: System MUST chunk the extracted text content consistently with configurable parameters (default 512 tokens with 20% overlap between chunks)
+- **FR-004**: System MUST preserve document metadata including title, URL, section hierarchy, and content relationships
+- **FR-005**: System MUST generate vector embeddings using the Cohere embedding model for each text chunk
+- **FR-006**: System MUST store vector embeddings in Qdrant Cloud with associated metadata
+- **FR-007**: System MUST handle content updates by detecting changes and updating only affected embeddings
+- **FR-008**: System MUST provide error handling and logging for failed crawling, embedding, or storage operations
+- **FR-009**: System MUST respect robots.txt and implement appropriate crawling delays to avoid overloading the website
 
 ### Key Entities
 
-- **Text Chunk**: A segment of documentation content with configurable size and overlap parameters, including the raw text content and associated metadata
+- **Crawled Web Page**: A web page retrieved from the deployed Docusaurus site, containing HTML content to be processed
+- **Text Chunk**: A segment of extracted text content with configurable size and overlap parameters, including the raw text content and associated metadata
 - **Vector Embedding**: Numerical representation of text content generated by the Cohere model, stored with document metadata
-- **Document Metadata**: Information about the source document including title, URL, section hierarchy, and content relationships
+- **Document Metadata**: Information about the source web page including URL, title, section hierarchy, and content relationships
 - **Embedding Collection**: Grouping of related vector embeddings in Qdrant Cloud, organized by document or content type
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: 100% of Docusaurus documentation content is successfully processed and converted to vector embeddings
+- **SC-001**: 100% of public book pages from the deployed website are successfully crawled and converted to vector embeddings
 - **SC-002**: Text chunking follows consistent parameters with configurable size (default 512 tokens) and overlap (default 20%)
 - **SC-003**: All document metadata is preserved and associated with corresponding vector embeddings
 - **SC-004**: Vector embeddings are successfully stored in Qdrant Cloud with 99%+ success rate
-- **SC-005**: The system can process a typical Docusaurus documentation set within 30 minutes
+- **SC-005**: The system can process all public book pages within 45 minutes
 - **SC-006**: Embeddings can be retrieved by vector similarity search with relevant results
+- **SC-007**: Crawling process respects website rate limits and completes without overloading the server
