@@ -5,8 +5,28 @@
  * Provides methods for querying the RAG agent and handling responses.
  */
 
-// Base API URL
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000'; // Use env var or fallback to localhost
+// Base API URL - Safe environment variable handling for Docusaurus
+// Default to local backend port 8000 where backend is running
+// Prefer setting REACT_APP_API_BASE_URL in your environment for deployments.
+let API_BASE_URL = 'http://localhost:8000'; // default fallback
+
+// Check for environment variable in multiple ways to ensure compatibility
+// First, check the process.env (Node.js build time)
+if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE_URL) {
+  API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+}
+// Then check if it's available in the browser window object (runtime)
+else if (typeof window !== 'undefined' && window.env && window.env.REACT_APP_API_BASE_URL) {
+  API_BASE_URL = window.env.REACT_APP_API_BASE_URL;
+}
+// Check if the variable is available directly on the window object
+else if (typeof window !== 'undefined' && window.REACT_APP_API_BASE_URL) {
+  API_BASE_URL = window.REACT_APP_API_BASE_URL;
+}
+// For production deployments, use the same origin as the frontend
+else if (typeof window !== 'undefined' && window.location && window.location.hostname !== 'localhost') {
+  API_BASE_URL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}`;
+}
 
 /**
  * Query the RAG agent with a user question.

@@ -65,7 +65,9 @@ const ProfilePage: React.FC = () => {
         <div className="row">
           <div className="col col--6 col--offset-3">
             <div className={styles.profileContainer}>
-              <h1 className={styles.profileHeading}>User Profile</h1>
+              <div className={styles.profileHeader}>
+                <h1 className={styles.profileHeading}>User Profile</h1>
+              </div>
 
               {message && (
                 <div className={`${styles.messageContainer} ${message.includes('successfully') ? styles.success : styles.error}`}>

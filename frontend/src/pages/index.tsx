@@ -25,18 +25,22 @@ function HomepageHeader() {
             <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
             <div className={styles.buttons}>
               <Link
-                className={clsx('button button--secondary button--lg', styles.readBookButton)}
+                className={clsx('button button--secondary button--lg', styles.primaryButton)}
                 to="/docs">
-                Read the Book
+                Start Reading
+              </Link>
+              <Link
+                className={clsx('button button--outline button--lg', styles.secondaryButton)}
+                to="/docs/intro">
+                Explore Chapters
               </Link>
             </div>
           </div>
-          <div className={styles.heroImage}>
-            <img
-              src="/img/robotics-hero-image.svg"
-              alt="AI and Robotics Visualization"
-              className={styles.heroImageContent}
-            />
+          <div className={styles.heroVisual}>
+            <div className={styles.overlappingCircles}>
+              <div className={styles.circleOne}></div>
+              <div className={styles.circleTwo}></div>
+            </div>
           </div>
         </div>
       </div>
