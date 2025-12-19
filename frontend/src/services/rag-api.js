@@ -67,7 +67,22 @@ export const queryRAGAgent = async (query, options = {}) => {
 
     if (!response.ok) {
       // Handle error with user-friendly message and retry option
-      const errorData = await response.json();
+      // First check if the response has content to parse
+      const contentType = response.headers.get('content-type');
+      let errorData;
+
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          errorData = await response.json();
+        } catch (jsonError) {
+          // If JSON parsing fails, create a generic error
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      } else {
+        // If not JSON, use status text
+        throw new Error(`HTTP error! status: ${response.status}, ${response.statusText}`);
+      }
+
       throw new Error(errorData.message || 'Failed to process query. Please try again.');
     }
 
@@ -92,11 +107,16 @@ export const checkRAGHealth = async () => {
     const response = await fetch(`${API_BASE_URL}/api/rag/health`);
 
     if (!response.ok) {
-      throw new Error('Health check failed');
+      throw new Error(`Health check failed with status: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      return data;
+    } else {
+      throw new Error('Health check response is not in JSON format');
+    }
   } catch (error) {
     console.error('Health check failed:', error);
     return {
