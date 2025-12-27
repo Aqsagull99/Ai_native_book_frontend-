@@ -1,8 +1,9 @@
-# Specification Quality Checklist: Personalized Chapter Content
+# Specification Quality Checklist: Authenticated Chapter Personalization
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2025-12-13
-**Feature**: [Link to spec.md]
+**Updated**: 2025-12-27
+**Feature**: [spec.md](../spec.md)
 
 ## Content Quality
 
@@ -31,4 +32,8 @@
 
 ## Notes
 
-- Items marked complete: Specification is ready for planning phase
+- **2025-12-27**: Spec updated from gamification focus to AI personalization focus
+- Removed bonus points requirements (FR-004 through FR-007 from old spec)
+- Added revert functionality as P3 user story
+- Added "Constraints" and "Not Building" sections for clarity
+- Ready for `/sp.plan` phase

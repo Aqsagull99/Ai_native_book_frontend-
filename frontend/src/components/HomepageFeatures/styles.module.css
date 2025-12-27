@@ -104,3 +104,45 @@
     font-size: 0.9rem;
   }
 }
+
+
+/* ================================
+   LIGHT MODE – FEATURES
+   ================================ */
+
+[data-theme='light'] .features {
+  background: #f8f9fa;
+}
+
+/* Feature card */
+[data-theme='light'] .featureItem {
+  background: #ffffff;
+  border: 1.5px solid #e0e0e0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Hover */
+[data-theme='light'] .featureItem:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
+  border-color: #f9a825;
+  background: #ffffff;
+}
+
+
+[data-theme='light'] .featureIcon {
+  background: rgba(249, 168, 37, 0.15);
+  color: #f9a825;
+  box-shadow: inset 0 0 0 1px rgba(249, 168, 37, 0.4);
+}
+
+
+[data-theme='light'] .featureContent h3 {
+  color: #2e7d32; /* dark green heading */
+}
+
+[data-theme='light'] .featureContent p {
+  color: #444;
+}

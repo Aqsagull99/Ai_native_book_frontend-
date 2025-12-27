@@ -49,6 +49,44 @@ interface ActivatePersonalizationResponse {
   isDuplicate?: boolean;
 }
 
+// NEW: AI Personalization Types
+interface AIPersonalizationPreferences {
+  reading_level: string;
+  technical_explanations: boolean;
+  example_density: string;
+}
+
+interface AIPersonalizationUserProfile {
+  software_experience?: string;
+  hardware_experience?: string;
+}
+
+interface AIPersonalizeResponseBackend {
+  success: boolean;
+  personalized_content?: string;
+  chapter_id: string;
+  preferences_applied?: {
+    reading_level: string;
+    technical_explanations: boolean;
+    example_density: string;
+  };
+  processing_time_ms?: number;
+  error?: string;
+}
+
+interface AIPersonalizeResponse {
+  success: boolean;
+  personalized_content?: string;
+  chapter_id: string;
+  preferences_applied?: {
+    reading_level: string;
+    technical_explanations: boolean;
+    example_density: string;
+  };
+  processing_time_ms?: number;
+  error?: string;
+}
+
 class PersonalizationService {
   private baseUrl: string;
 
@@ -213,6 +251,109 @@ class PersonalizationService {
       }
     }
     return {};
+  }
+
+  // ============================================
+  // NEW: AI Personalization Methods
+  // ============================================
+
+  /**
+   * AI Personalize chapter content based on user preferences
+   * @param chapterId The ID of the chapter to personalize
+   * @param content The HTML content to personalize
+   * @param preferences The personalization preferences (reading_level, technical_explanations, example_density)
+   * @param userProfile Optional user profile with experience levels
+   * @returns Promise<AIPersonalizeResponse>
+   */
+  async aiPersonalize(
+    chapterId: string,
+    content: string,
+    preferences: AIPersonalizationPreferences,
+    userProfile?: AIPersonalizationUserProfile
+  ): Promise<AIPersonalizeResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/personalization/ai-personalize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...this.getAuthHeader()
+        },
+        body: JSON.stringify({
+          chapter_id: chapterId,
+          content: content,
+          preferences: preferences,
+          user_profile: userProfile || null
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          chapter_id: chapterId,
+          error: errorData.detail || `HTTP error! status: ${response.status}`
+        };
+      }
+
+      const data: AIPersonalizeResponseBackend = await response.json();
+      return {
+        success: data.success,
+        personalized_content: data.personalized_content,
+        chapter_id: data.chapter_id,
+        preferences_applied: data.preferences_applied,
+        processing_time_ms: data.processing_time_ms,
+        error: data.error
+      };
+    } catch (error: any) {
+      console.error('Error calling AI personalization:', error);
+      return {
+        success: false,
+        chapter_id: chapterId,
+        error: error.message || 'Network error during AI personalization'
+      };
+    }
+  }
+
+  /**
+   * Check the health of the personalization service
+   * @returns Promise with service health status
+   */
+  async checkHealth(): Promise<{
+    status: string;
+    service: string;
+    ai_available: boolean;
+    openrouter_configured: boolean;
+    error?: string;
+  }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/personalization/health`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        return {
+          status: 'unhealthy',
+          service: 'personalization',
+          ai_available: false,
+          openrouter_configured: false,
+          error: `HTTP error! status: ${response.status}`
+        };
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      console.error('Error checking personalization health:', error);
+      return {
+        status: 'unhealthy',
+        service: 'personalization',
+        ai_available: false,
+        openrouter_configured: false,
+        error: error.message || 'Network error'
+      };
+    }
   }
 }
 

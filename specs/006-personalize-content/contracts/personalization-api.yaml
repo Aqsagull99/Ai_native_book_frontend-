@@ -1,98 +1,217 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: Personalization API
-  description: API for managing content personalization and bonus points
-  version: 1.0.0
+  title: AI Chapter Personalization API
+  description: |
+    API for AI-powered content personalization based on user reading level.
+
+    **Version 2.0 Changes:**
+    - Added `/ai-personalize` endpoint for LLM-based content transformation
+    - Legacy endpoints kept for backward compatibility
+    - Session-only storage (no database persistence for personalized content)
+  version: 2.0.0
+  contact:
+    name: Robot Book Hackathon Team
+
 servers:
   - url: http://localhost:8000/api
-    description: Development server
+    description: Local development
+  - url: https://ai-native-book-frontend-backend.onrender.com/api
+    description: Production (Render)
+
+security:
+  - BearerAuth: []
 
 paths:
-  /personalization/activate:
+  # ============================================
+  # NEW: AI Personalization Endpoint
+  # ============================================
+  /personalization/ai-personalize:
     post:
-      summary: Activate personalization for a chapter
-      description: Allows a user to personalize content for a specific chapter and earn bonus points
+      summary: Generate AI-personalized chapter content
+      description: |
+        Uses OpenRouter LLM to personalize chapter content based on user's
+        reading level, technical explanation preferences, and example density.
+
+        **Key Features:**
+        - Preserves all headings, code blocks, and structure
+        - Adjusts language complexity based on reading level
+        - Adds/removes technical term explanations
+        - Modifies example density
+
+        **Storage:** Personalized content is returned but NOT stored in database.
+        Frontend stores in session state only.
+      operationId: aiPersonalizeChapter
+      tags:
+        - AI Personalization
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - chapter_id
-              properties:
-                chapter_id:
-                  type: string
-                  description: Unique identifier for the chapter to personalize (based on docs folder structure)
-                preferences:
-                  type: object
-                  description: User-specific content customization settings (profile customizations applied to chapter)
-                  additionalProperties: true
+              $ref: '#/components/schemas/AIPersonalizeRequest'
+            example:
+              chapter_id: "module-1-ros2-nervous-system/chapter-1-introduction"
+              content: "<h1>Introduction to ROS2</h1><p>ROS2 middleware...</p>"
+              preferences:
+                reading_level: "beginner"
+                technical_explanations: true
+                example_density: "detailed"
+              user_profile:
+                software_experience: "beginner"
+                hardware_experience: "none"
       responses:
         '200':
-          description: Personalization activated successfully
+          description: Successfully personalized content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIPersonalizeResponse'
+              example:
+                success: true
+                personalized_content: "<h1>Introduction to ROS2</h1><p>ROS2 (Robot Operating System 2, a popular robotics framework) middleware...</p>"
+                chapter_id: "module-1-ros2-nervous-system/chapter-1-introduction"
+                preferences_applied:
+                  reading_level: "beginner"
+                  technical_explanations: true
+                  example_density: "detailed"
+                processing_time_ms: 5432
+        '400':
+          description: Invalid request - missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Missing required field: content"
+                chapter_id: null
+        '401':
+          description: Unauthorized - missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Authorization header missing or invalid"
+                chapter_id: null
+        '503':
+          description: AI service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "AI personalization service temporarily unavailable"
+                chapter_id: "module-1/chapter-1"
+
+  /personalization/health:
+    get:
+      summary: Health check for personalization service
+      description: Check if personalization service and AI backend are available
+      operationId: healthCheck
+      tags:
+        - Health
+      security: []  # No auth required
+      responses:
+        '200':
+          description: Service healthy
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
+                  status:
+                    type: string
+                    example: "healthy"
+                  service:
+                    type: string
+                    example: "personalization"
+                  ai_available:
                     type: boolean
                     example: true
-                  message:
-                    type: string
-                    example: "Content personalized successfully, 50 bonus points awarded"
-                  points_earned:
-                    type: integer
-                    example: 50
-                  personalized_content:
-                    type: object
-                    description: The personalized content based on user profile customizations
-        '400':
-          description: Invalid request - chapter_id missing or invalid
+                  openrouter_configured:
+                    type: boolean
+                    example: true
+
+  # ============================================
+  # LEGACY: Gamification Endpoints (Backward Compatible)
+  # ============================================
+  /personalization/activate:
+    post:
+      summary: Activate personalization and earn bonus points (legacy)
+      description: |
+        **Legacy endpoint** for gamification. Awards 50 bonus points per chapter.
+        Kept for backward compatibility with existing frontend.
+
+        For AI personalization, use `/ai-personalize` instead.
+      operationId: activatePersonalization
+      tags:
+        - Legacy Personalization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivateRequest'
+      responses:
+        '200':
+          description: Personalization activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivateResponse'
         '401':
-          description: Unauthorized - user not authenticated
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: Conflict - personalization already activated for this chapter
+          description: Already personalized (duplicate)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivateResponse'
 
   /personalization/status:
     get:
-      summary: Get personalization status for a chapter
-      description: Check if a chapter has been personalized by the current user
+      summary: Check personalization status for a chapter
+      operationId: getPersonalizationStatus
+      tags:
+        - Legacy Personalization
       parameters:
         - name: chapter_id
           in: query
           required: true
           schema:
             type: string
-            description: Unique identifier for the chapter to check
+          description: Unique identifier for the chapter
+          example: "module-1/chapter-1"
       responses:
         '200':
-          description: Personalization status retrieved
+          description: Status retrieved
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  is_personalized:
-                    type: boolean
-                    example: true
-                  preferences:
-                    type: object
-                    description: User's personalization preferences for this chapter
-                  points_earned:
-                    type: integer
-                    example: 50
+                $ref: '#/components/schemas/StatusResponse'
         '401':
-          description: Unauthorized - user not authenticated
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /personalization/preferences:
     get:
       summary: Get all personalization preferences for user
-      description: Retrieve all personalization preferences set by the user
+      operationId: getUserPreferences
+      tags:
+        - Legacy Personalization
       responses:
         '200':
-          description: User preferences retrieved
+          description: Preferences retrieved
           content:
             application/json:
               schema:
@@ -105,47 +224,205 @@ paths:
                       properties:
                         chapter_id:
                           type: string
-                          example: "chapter-1"
                         preferences:
                           type: object
-                          description: Personalization settings for the chapter
                         created_at:
                           type: string
                           format: date-time
                         points_earned:
                           type: integer
-                          example: 50
         '401':
-          description: Unauthorized - user not authenticated
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /user/bonus-points:
     get:
       summary: Get user's bonus points
-      description: Retrieve the total bonus points earned by the user
+      operationId: getBonusPoints
+      tags:
+        - Legacy Personalization
       responses:
         '200':
           description: Bonus points retrieved
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  total_points:
-                    type: integer
-                    example: 150
-                  points_breakdown:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        chapter_id:
-                          type: string
-                          example: "chapter-1"
-                        points:
-                          type: integer
-                          example: 50
-                        earned_at:
-                          type: string
-                          format: date-time
+                $ref: '#/components/schemas/BonusPointsResponse'
         '401':
-          description: Unauthorized - user not authenticated
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from authentication
+
+  schemas:
+    # ============================================
+    # AI Personalization Schemas
+    # ============================================
+    AIPersonalizeRequest:
+      type: object
+      required:
+        - chapter_id
+        - content
+        - preferences
+      properties:
+        chapter_id:
+          type: string
+          description: Unique identifier for the chapter
+          example: "module-1-ros2-nervous-system/chapter-1-introduction"
+        content:
+          type: string
+          description: HTML content to personalize
+          example: "<h1>Title</h1><p>Content...</p>"
+        preferences:
+          type: object
+          required:
+            - reading_level
+            - technical_explanations
+            - example_density
+          properties:
+            reading_level:
+              type: string
+              enum: [beginner, intermediate, advanced]
+              description: |
+                - beginner: Simpler language, more explanations
+                - intermediate: Balanced
+                - advanced: Concise, professional
+            technical_explanations:
+              type: boolean
+              description: Add inline explanations for technical terms
+            example_density:
+              type: string
+              enum: [minimal, normal, detailed]
+              description: |
+                - minimal: Only essential examples
+                - normal: Keep original examples
+                - detailed: Add more examples
+        user_profile:
+          type: object
+          description: User's profile for context (optional)
+          properties:
+            software_experience:
+              type: string
+              enum: [beginner, intermediate, advanced]
+            hardware_experience:
+              type: string
+              enum: [none, basic, advanced]
+
+    AIPersonalizeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        personalized_content:
+          type: string
+          description: AI-modified HTML content with preserved structure
+        chapter_id:
+          type: string
+        preferences_applied:
+          type: object
+          properties:
+            reading_level:
+              type: string
+            technical_explanations:
+              type: boolean
+            example_density:
+              type: string
+        processing_time_ms:
+          type: integer
+          description: Time taken to process in milliseconds
+
+    # ============================================
+    # Legacy Schemas
+    # ============================================
+    ActivateRequest:
+      type: object
+      required:
+        - chapter_id
+      properties:
+        chapter_id:
+          type: string
+          description: Chapter to personalize
+        preferences:
+          type: object
+          additionalProperties: true
+          description: Optional preferences
+
+    ActivateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        points_earned:
+          type: integer
+        is_duplicate:
+          type: boolean
+        personalized_content:
+          type: object
+
+    StatusResponse:
+      type: object
+      properties:
+        is_personalized:
+          type: boolean
+        preferences:
+          type: object
+          nullable: true
+        points_earned:
+          type: integer
+
+    BonusPointsResponse:
+      type: object
+      properties:
+        total_points:
+          type: integer
+        points_breakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              chapter_id:
+                type: string
+              points:
+                type: integer
+              earned_at:
+                type: string
+                format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error message
+        chapter_id:
+          type: string
+          nullable: true
+
+tags:
+  - name: AI Personalization
+    description: |
+      **NEW** AI-powered content personalization using OpenRouter LLM.
+      Adjusts content based on reading level while preserving structure.
+  - name: Legacy Personalization
+    description: |
+      Original gamification-based personalization (bonus points).
+      Kept for backward compatibility.
+  - name: Health
+    description: Service health and availability checks

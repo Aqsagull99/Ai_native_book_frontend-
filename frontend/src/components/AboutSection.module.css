@@ -173,3 +173,66 @@
     transform: translateY(0);
   }
 }
+
+
+/* ================================
+   LIGHT MODE – SVG FIX
+   ================================ */
+
+[data-theme='light'] .illustrationSvg path,
+[data-theme='light'] .illustrationSvg line,
+[data-theme='light'] .illustrationSvg circle,
+[data-theme='light'] .illustrationSvg rect,
+[data-theme='light'] .illustrationSvg polygon {
+  stroke: #2b2b2b !important;
+  fill: none !important;
+}
+
+[data-theme='light'] .illustrationSvg path {
+  stroke: #5c6f88 !important; /* soft slate */
+}
+
+[data-theme='light'] .illustrationSvg {
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.15));
+}
+
+
+
+/* ================================
+   LIGHT MODE – ILLUSTRATION BORDER FIX
+   ================================ */
+
+[data-theme='light'] .illustrationContainer {
+  background: #ffffff;
+  border: 2px solid #2e7d32; /* visible green border */
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+
+[data-theme='light'] .illustrationContainer:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px rgba(46, 125, 50, 0.3);
+}
+
+/* ================================
+   LIGHT MODE – ABOUT ALIGNMENT FIX
+   ================================ */
+
+[data-theme='light'] .aboutRow::before {
+  content: none !important;
+}
+
+
+[data-theme='light'] .aboutRow {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+
+

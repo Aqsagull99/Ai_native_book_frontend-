@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { PersonalizationProvider, usePersonalization } from './contexts/PersonalizationContext';
+import { TranslationProvider } from './contexts/TranslationContext';
 import FloatingRagChatbot from './components/FloatingRagChatbot';
 
 // Create a context to coordinate between auth and personalization
@@ -38,9 +39,11 @@ const ProvidersWrapper: React.FC<ProvidersWrapperProps> = ({ children }) => {
   return (
     <AuthProvider>
       <PersonalizationProvider>
-        <ProvidersInner>
-          {children}
-        </ProvidersInner>
+        <TranslationProvider>
+          <ProvidersInner>
+            {children}
+          </ProvidersInner>
+        </TranslationProvider>
       </PersonalizationProvider>
     </AuthProvider>
   );

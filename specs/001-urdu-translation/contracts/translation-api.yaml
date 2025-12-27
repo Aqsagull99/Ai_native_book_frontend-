@@ -1,0 +1,199 @@
+openapi: 3.0.3
+info:
+  title: Urdu Translation API
+  description: API for translating book chapter content to Urdu
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.yourdomain.com
+    description: Production server
+
+paths:
+  /api/translation/translate:
+    post:
+      summary: Translate chapter content to Urdu
+      description: Translates the provided chapter content to Urdu for authenticated users
+      operationId: translateChapter
+      tags:
+        - Translation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationRequest'
+            example:
+              chapter_id: "introduction-to-ai"
+              target_language: "ur"
+              content: "# Introduction to AI\n\nArtificial Intelligence is..."
+      responses:
+        '200':
+          description: Successful translation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+              example:
+                success: true
+                translated_content: "# مصنوعی ذہانت\n\nمصنوعی ذہانت ایک ..."
+                cached: false
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - user not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - user not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests - rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/translation/status/{chapter_id}:
+    get:
+      summary: Check translation status
+      description: Checks if a chapter has been translated to Urdu for the current user
+      operationId: getTranslationStatus
+      tags:
+        - Translation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: chapter_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the chapter to check
+      responses:
+        '200':
+          description: Translation status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationStatusResponse'
+        '401':
+          description: Unauthorized - user not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TranslationRequest:
+      type: object
+      required:
+        - chapter_id
+        - target_language
+        - content
+      properties:
+        chapter_id:
+          type: string
+          description: Unique identifier for the chapter
+          example: "introduction-to-ai"
+        target_language:
+          type: string
+          description: Target language code (only "ur" for Urdu supported)
+          example: "ur"
+        content:
+          type: string
+          description: Original content to translate
+          example: "# Introduction to AI\n\nArtificial Intelligence is..."
+
+    TranslationResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: Whether the translation was successful
+          example: true
+        translated_content:
+          type: string
+          description: The translated content in Urdu
+          example: "# مصنوعی ذہانت\n\nمصنوعی ذہانت ایک ..."
+        cached:
+          type: boolean
+          description: Whether the result came from cache
+          example: false
+        error_message:
+          type: string
+          description: Error message if translation failed
+          example: "Translation service unavailable"
+
+    TranslationStatusResponse:
+      type: object
+      required:
+        - chapter_id
+        - is_translated
+      properties:
+        chapter_id:
+          type: string
+          description: ID of the chapter
+          example: "introduction-to-ai"
+        is_translated:
+          type: boolean
+          description: Whether this chapter has been translated
+          example: true
+        cached:
+          type: boolean
+          description: Whether the translation is cached
+          example: true
+        last_translated_at:
+          type: string
+          format: date-time
+          description: When the translation was last performed
+          example: "2023-10-20T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "User not authenticated"
+        details:
+          type: object
+          description: Additional error details
+          example: {}
+
+security:
+  - BearerAuth: []

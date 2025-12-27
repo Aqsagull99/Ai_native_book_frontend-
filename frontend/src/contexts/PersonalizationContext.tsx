@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { personalizationService } from '../services/personalizationService';
 
 type ExperienceLevel = 'beginner' | 'intermediate' | 'advanced';
+type ReadingLevel = 'beginner' | 'intermediate' | 'advanced';
+type ExampleDensity = 'minimal' | 'normal' | 'detailed';
 
 interface PersonalizationStatus {
   isPersonalized: boolean;
@@ -18,6 +20,21 @@ interface UserBonusPoints {
   }>;
 }
 
+// NEW: AI Personalization Types
+interface AIPreferences {
+  readingLevel: ReadingLevel;
+  technicalExplanations: boolean;
+  exampleDensity: ExampleDensity;
+}
+
+interface PersonalizedContentEntry {
+  content: string;           // AI-personalized HTML
+  originalContent: string;   // Original HTML for revert
+  isPersonalized: boolean;
+  personalizedAt: string;    // ISO timestamp
+  preferencesUsed: AIPreferences;
+}
+
 interface PersonalizationContextType {
   experienceLevel: ExperienceLevel;
   setExperienceLevel: (level: ExperienceLevel) => void;
@@ -29,6 +46,23 @@ interface PersonalizationContextType {
   getPersonalizationStatus: (chapterId: string) => Promise<PersonalizationStatus>;
   getUserBonusPoints: () => Promise<UserBonusPoints>;
   refreshPersonalizationData: () => Promise<void>;
+
+  // NEW: AI Personalization State & Methods
+  aiPreferences: AIPreferences;
+  personalizedContent: Record<string, PersonalizedContentEntry>;
+  isPersonalizing: boolean;
+  personalizationError: string | null;
+  isPanelOpen: boolean;
+  activeChapterId: string | null;
+
+  // NEW: AI Personalization Methods
+  updateAIPreferences: (prefs: Partial<AIPreferences>) => void;
+  personalizeChapter: (chapterId: string, content: string) => Promise<boolean>;
+  revertToOriginal: (chapterId: string) => void;
+  openPanel: (chapterId: string) => void;
+  closePanel: () => void;
+  getContentForChapter: (chapterId: string) => PersonalizedContentEntry | null;
+  isChapterPersonalized: (chapterId: string) => boolean;
 }
 
 const PersonalizationContext = createContext<PersonalizationContextType | undefined>(undefined);
@@ -37,10 +71,29 @@ interface PersonalizationProviderProps {
   children: ReactNode;
 }
 
+// Helper function to map user profile to default AI preferences
+const mapProfileToDefaults = (softwareExperience: string): AIPreferences => ({
+  readingLevel: (softwareExperience as ReadingLevel) || 'intermediate',
+  technicalExplanations: softwareExperience === 'beginner',
+  exampleDensity: 'normal'
+});
+
 export const PersonalizationProvider: React.FC<PersonalizationProviderProps> = ({ children }) => {
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>('beginner');
   const [personalizationStatus, setPersonalizationStatus] = useState<Record<string, PersonalizationStatus>>({});
   const [bonusPoints, setBonusPoints] = useState<UserBonusPoints | null>(null);
+
+  // NEW: AI Personalization State
+  const [aiPreferences, setAIPreferences] = useState<AIPreferences>({
+    readingLevel: 'intermediate',
+    technicalExplanations: false,
+    exampleDensity: 'normal'
+  });
+  const [personalizedContent, setPersonalizedContent] = useState<Record<string, PersonalizedContentEntry>>({});
+  const [isPersonalizing, setIsPersonalizing] = useState<boolean>(false);
+  const [personalizationError, setPersonalizationError] = useState<string | null>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
+  const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
 
   const getPersonalizedContent = (contentOptions: { level: ExperienceLevel; content: string }[]) => {
     // First, try to get content for the exact experience level
@@ -76,6 +129,9 @@ export const PersonalizationProvider: React.FC<PersonalizationProviderProps> = (
     } else {
       setExperienceLevel('beginner');
     }
+
+    // NEW: Also update AI preferences defaults from profile
+    setAIPreferences(mapProfileToDefaults(softwareExperience));
   };
 
   const activatePersonalization = async (chapterId: string, preferences: Record<string, any> = {}): Promise<boolean> => {
@@ -204,6 +260,94 @@ export const PersonalizationProvider: React.FC<PersonalizationProviderProps> = (
     getUserBonusPoints();
   }, []);
 
+  // ============================================
+  // NEW: AI Personalization Methods
+  // ============================================
+
+  const updateAIPreferences = (prefs: Partial<AIPreferences>) => {
+    setAIPreferences(prev => ({ ...prev, ...prefs }));
+  };
+
+  const personalizeChapter = async (chapterId: string, content: string): Promise<boolean> => {
+    console.log('personalizeChapter called - chapterId:', chapterId, 'content length:', content.length);
+    console.log('Current preferences:', aiPreferences);
+
+    setIsPersonalizing(true);
+    setPersonalizationError(null);
+
+    try {
+      console.log('Calling personalizationService.aiPersonalize...');
+      const result = await personalizationService.aiPersonalize(
+        chapterId,
+        content,
+        {
+          reading_level: aiPreferences.readingLevel,
+          technical_explanations: aiPreferences.technicalExplanations,
+          example_density: aiPreferences.exampleDensity
+        }
+      );
+
+      console.log('API result:', result);
+
+      if (result.success && result.personalized_content) {
+        console.log('Personalization successful, updating state...');
+        setPersonalizedContent(prev => ({
+          ...prev,
+          [chapterId]: {
+            content: result.personalized_content,
+            originalContent: content,
+            isPersonalized: true,
+            personalizedAt: new Date().toISOString(),
+            preferencesUsed: { ...aiPreferences }
+          }
+        }));
+        setIsPanelOpen(false);
+        return true;
+      } else {
+        console.error('Personalization failed:', result.error);
+        setPersonalizationError(result.error || 'Failed to personalize content');
+        return false;
+      }
+    } catch (error: any) {
+      console.error('Error personalizing chapter:', error);
+      setPersonalizationError(error.message || 'An error occurred during personalization');
+      return false;
+    } finally {
+      setIsPersonalizing(false);
+    }
+  };
+
+  const revertToOriginal = (chapterId: string): void => {
+    setPersonalizedContent(prev => {
+      const updated = { ...prev };
+      delete updated[chapterId];
+      return updated;
+    });
+    setPersonalizationError(null);
+  };
+
+  const openPanel = (chapterId: string): void => {
+    console.log('openPanel called with chapterId:', chapterId);
+    setActiveChapterId(chapterId);
+    setIsPanelOpen(true);
+    setPersonalizationError(null);
+    console.log('Panel state set - isPanelOpen: true, activeChapterId:', chapterId);
+  };
+
+  const closePanel = (): void => {
+    setIsPanelOpen(false);
+    setActiveChapterId(null);
+    setPersonalizationError(null);
+  };
+
+  const getContentForChapter = (chapterId: string): PersonalizedContentEntry | null => {
+    return personalizedContent[chapterId] || null;
+  };
+
+  const isChapterPersonalized = (chapterId: string): boolean => {
+    return !!personalizedContent[chapterId]?.isPersonalized;
+  };
+
   const value = {
     experienceLevel,
     setExperienceLevel,
@@ -214,7 +358,22 @@ export const PersonalizationProvider: React.FC<PersonalizationProviderProps> = (
     activatePersonalization,
     getPersonalizationStatus,
     getUserBonusPoints,
-    refreshPersonalizationData
+    refreshPersonalizationData,
+
+    // NEW: AI Personalization State & Methods
+    aiPreferences,
+    personalizedContent,
+    isPersonalizing,
+    personalizationError,
+    isPanelOpen,
+    activeChapterId,
+    updateAIPreferences,
+    personalizeChapter,
+    revertToOriginal,
+    openPanel,
+    closePanel,
+    getContentForChapter,
+    isChapterPersonalized
   };
 
   return (

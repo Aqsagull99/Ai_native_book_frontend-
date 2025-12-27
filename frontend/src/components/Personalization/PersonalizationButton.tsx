@@ -18,100 +18,98 @@ const PersonalizationButton: React.FC<PersonalizationButtonProps> = ({
   style
 }) => {
   const {
+    // Legacy methods (keep for backward compatibility)
     personalizationStatus,
     activatePersonalization,
-    getPersonalizationStatus
+    getPersonalizationStatus,
+    // NEW: AI Personalization methods
+    isChapterPersonalized,
+    isPersonalizing,
+    openPanel,
+    revertToOriginal
   } = usePersonalization();
   const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isPersonalized, setIsPersonalized] = useState(false);
-  const [buttonText, setButtonText] = useState('Personalize Content');
 
-  // Check personalization status on component mount and when chapterId changes
-  useEffect(() => {
-    const checkStatus = async () => {
-      if (user) {
-        const status = await getPersonalizationStatus(chapterId);
-        setIsPersonalized(status.isPersonalized);
-        setButtonText(status.isPersonalized ? 'Content Personalized!' : 'Personalize Content');
-      }
-    };
+  // Use the new AI personalization state
+  const isAIPersonalized = isChapterPersonalized(chapterId);
 
-    checkStatus();
-  }, [chapterId, user, getPersonalizationStatus]);
+  const handleButtonClick = () => {
+    console.log('PersonalizationButton clicked, chapterId:', chapterId, 'user:', !!user, 'isAIPersonalized:', isAIPersonalized);
 
-  const handlePersonalize = async () => {
     if (!user) {
-      alert('Please sign in to personalize content and earn bonus points');
+      alert('Please sign in to personalize content');
       return;
     }
 
-    if (isPersonalized) {
-      alert('Content already personalized! You have already earned your bonus points for this chapter.');
+    if (isAIPersonalized) {
+      // If already personalized, clicking reverts to original
+      console.log('Reverting to original for chapter:', chapterId);
+      revertToOriginal(chapterId);
       onPersonalize?.(true);
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      const result = await activatePersonalization(chapterId, {
-        // Default preferences for this chapter
-        chapterId,
-        personalizationType: 'content',
-        timestamp: new Date().toISOString()
-      });
-
-      if (result) {
-        setIsPersonalized(true);
-        setButtonText('Content Personalized!');
-        // Get the actual points earned from the personalization status
-        const status = personalizationStatus[chapterId];
-        onPersonalize?.(true, status?.pointsEarned || 50); // Default to 50 if not available
-      } else {
-        alert('Failed to personalize content. Please try again.');
-        onPersonalize?.(false);
-      }
-    } catch (error) {
-      console.error('Error personalizing content:', error);
-      alert('An error occurred while personalizing content. Please try again.');
-      onPersonalize?.(false);
-    } finally {
-      setIsProcessing(false);
+    } else {
+      // Open the personalization panel
+      console.log('Opening panel for chapter:', chapterId);
+      openPanel(chapterId);
     }
   };
 
-  // Define distinctive styling as specified in requirements (orange or teal color)
+  // Determine button text and state
+  const getButtonText = () => {
+    if (isPersonalizing) {
+      return 'Personalizing...';
+    }
+    if (isAIPersonalized) {
+      return 'Revert to Original';
+    }
+    return 'Personalize Content';
+  };
+
+  // Define styling based on state
   const buttonStyle: React.CSSProperties = {
-    backgroundColor: '#2196F3', // Blue color as an alternative to orange/teal that contrasts well
+    backgroundColor: isAIPersonalized ? '#4CAF50' : '#2196F3', // Green when personalized, Blue otherwise
     color: 'white',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',
-    cursor: isProcessing || isPersonalized ? 'default' : 'pointer',
+    cursor: isPersonalizing ? 'not-allowed' : 'pointer',
     fontSize: '16px',
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
-    opacity: isProcessing ? 0.7 : 1,
-    pointerEvents: isProcessing || isPersonalized ? 'none' : 'auto',
+    opacity: isPersonalizing ? 0.7 : 1,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
     ...style
   };
 
-  // If already personalized, show a different style
-  if (isPersonalized) {
-    buttonStyle.backgroundColor = '#4CAF50'; // Green for already personalized
+  // Only show button for authenticated users
+  if (!user) {
+    return null;
   }
 
   return (
     <button
       className={`personalization-button ${className}`}
       style={buttonStyle}
-      onClick={handlePersonalize}
-      disabled={isProcessing || isPersonalized}
-      title={`Personalize ${chapterTitle} and earn bonus points`}
+      onClick={handleButtonClick}
+      disabled={isPersonalizing}
+      title={isAIPersonalized
+        ? 'Click to revert to original content'
+        : `Personalize ${chapterTitle} based on your preferences`
+      }
     >
-      {isProcessing ? 'Processing...' : buttonText}
-      {isPersonalized && <span style={{ marginLeft: '8px' }}>✓</span>}
+      {isPersonalizing && (
+        <span style={{
+          width: '16px',
+          height: '16px',
+          border: '2px solid rgba(255,255,255,0.3)',
+          borderTopColor: 'white',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite'
+        }} />
+      )}
+      <span>{getButtonText()}</span>
+      {isAIPersonalized && !isPersonalizing && <span>↩</span>}
     </button>
   );
 };
